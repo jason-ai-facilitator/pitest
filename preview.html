@@ -654,8 +654,13 @@
 
       return (
         <div className="screen" style={{ display: 'flex', flexDirection: 'column' }}>
-          <div style={{ width: '100%', height: '4px', background: '#f0f0f0', marginBottom: '40px', marginTop: '20px' }}>
-            <motion.div style={{ height: '100%', background: 'var(--color-accent)' }} initial={{ width: 0 }} animate={{ width: `${progress}%` }} />
+          <div style={{ width: '100%', height: '6px', background: '#f0f0f0', marginBottom: '32px', marginTop: '16px', borderRadius: '3px', overflow: 'hidden' }}>
+            <motion.div
+              style={{ height: '100%', background: 'linear-gradient(90deg, var(--color-accent) 0%, #5a8fb8 100%)' }}
+              initial={{ width: 0 }}
+              animate={{ width: `${progress}%` }}
+              transition={{ duration: 0.3 }}
+            />
           </div>
           <div style={{ position: 'relative', flex: 1, width: '100%' }}>
             <AnimatePresence>
@@ -673,25 +678,50 @@
                   height: '100%',
                   display: 'flex',
                   flexDirection: 'column',
-                  backgroundColor: 'var(--color-surface)',
-                  paddingBottom: '60px'
+                  backgroundColor: 'var(--color-surface)'
                 }}
               >
-                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                  <span className="text-small" style={{ color: 'var(--color-accent)', marginBottom: '16px', display: 'block' }}>QUESTION {index + 1}</span>
-                  <h2 className="text-h1" style={{ fontSize: '22px' }}>{currentQuestion.text}</h2>
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '0 0 40px 0' }}>
+                  <div style={{ marginBottom: '24px' }}>
+                    <span className="text-small" style={{ color: 'var(--color-accent)', marginBottom: '8px', display: 'block', fontWeight: 600 }}>QUESTION {index + 1} / {questions.length}</span>
+                    <div style={{ width: '60px', height: '3px', background: 'linear-gradient(90deg, var(--color-accent) 0%, #5a8fb8 100%)', borderRadius: '2px' }}></div>
+                  </div>
+                  <h2 className="text-h1" style={{ fontSize: '20px', lineHeight: '1.6', marginBottom: '0' }}>{currentQuestion.text}</h2>
                 </div>
-                <div style={{ marginBottom: '20px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+                <div style={{ marginBottom: '20px', background: '#f8f9fa', padding: '24px', borderRadius: '12px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
                     {[1, 2, 3, 4, 5].map((val) => (
-                      <button key={val} onClick={() => handleAnswer(val)} style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#fff', border: '1px solid #ddd', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', cursor: 'pointer' }}>
-                        <div style={{ width: val === 1 || val === 5 ? '14px' : '8px', height: val === 1 || val === 5 ? '14px' : '8px', background: '#ccc', borderRadius: '50%', margin: '0 auto' }}></div>
+                      <button
+                        key={val}
+                        onClick={() => handleAnswer(val)}
+                        style={{
+                          width: '52px',
+                          height: '52px',
+                          borderRadius: '50%',
+                          background: '#fff',
+                          border: '2px solid #e0e0e0',
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
+                        }}
+                        onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.1)'; e.currentTarget.style.borderColor = 'var(--color-accent)'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.borderColor = '#e0e0e0'; }}
+                      >
+                        <div style={{
+                          width: val === 1 || val === 5 ? '16px' : val === 2 || val === 4 ? '12px' : '8px',
+                          height: val === 1 || val === 5 ? '16px' : val === 2 || val === 4 ? '12px' : '8px',
+                          background: val === 5 ? 'var(--color-accent)' : val === 1 ? '#ccc' : '#ddd',
+                          borderRadius: '50%'
+                        }}></div>
                       </button>
                     ))}
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span className="text-small">전혀 아니다</span>
-                    <span className="text-small">매우 그렇다</span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '8px' }}>
+                    <span className="text-small" style={{ color: '#666', fontSize: '13px' }}>전혀 아니다</span>
+                    <span className="text-small" style={{ color: '#666', fontSize: '13px' }}>매우 그렇다</span>
                   </div>
                 </div>
               </motion.div>
@@ -963,28 +993,65 @@
       const history = useHistory();
       const [selectedId, setSelectedId] = useState(null);
 
+      const archetypeIcons = {
+        'Anthropologist': '🔍',
+        'Journalist': '📰',
+        'Detective': '🕵️',
+        'Systems Thinker': '🌐',
+        'Cartographer': '🗺️',
+        'Philosopher': '💭',
+        'Scientist': '🔬',
+        'Economist': '💰',
+        'Scenario Planner': '🎯',
+        'Judge': '⚖️'
+      };
+
       const renderList = () => (
-        <div style={{ padding: '0 0 40px 0' }}>
-          <h2 className="text-h2" style={{ marginBottom: '24px' }}>모든 아키타입 탐색</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>
+        <div style={{ padding: '20px 0 40px 0', background: 'linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%)', minHeight: '100vh' }}>
+          <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+            <h2 className="text-h2" style={{ fontSize: '26px', marginBottom: '12px' }}>모든 아키타입 탐색</h2>
+            <p className="text-body" style={{ color: '#666', fontSize: '15px' }}>10가지 문제정의 사고방식을 탐색해보세요</p>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
             {archetypes.map(a => (
-              <div
+              <motion.div
                 key={a.id}
                 onClick={() => setSelectedId(a.id)}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                whileHover={{ y: -4 }}
                 style={{
-                  padding: '20px', background: '#fff', borderRadius: '8px', border: '1px solid #eee', cursor: 'pointer',
-                  transition: 'transform 0.2s, box-shadow 0.2s'
+                  padding: '24px',
+                  background: '#fff',
+                  borderRadius: '16px',
+                  border: '1px solid #e8e8e8',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
                 }}
-                onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.05)'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none'; }}
+                onMouseEnter={(e) => { e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.12)'; e.currentTarget.style.borderColor = 'var(--color-accent)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.04)'; e.currentTarget.style.borderColor = '#e8e8e8'; }}
               >
-                <div style={{ fontSize: '18px', fontWeight: 700, color: '#111', marginBottom: '8px' }}>{a.name.split(' (')[0]}</div>
-                <div style={{ fontSize: '14px', color: '#666', lineHeight: 1.4 }}>{a.oneLiner}</div>
-              </div>
+                <div style={{ fontSize: '36px', marginBottom: '16px', textAlign: 'center' }}>{archetypeIcons[a.id] || '📌'}</div>
+                <div style={{ fontSize: '18px', fontWeight: 700, color: '#111', marginBottom: '12px', textAlign: 'center' }}>{a.name.split(' (')[0]}</div>
+                <div style={{ fontSize: '14px', color: '#666', lineHeight: 1.5, textAlign: 'center' }}>{a.oneLiner}</div>
+              </motion.div>
             ))}
           </div>
-          <button className="btn-secondary" style={{ marginTop: '40px', width: '100%' }} onClick={() => history.goBack()}>
-            내 결과로 돌아가기
+          <button
+            className="btn-secondary"
+            style={{
+              marginTop: '48px',
+              width: '100%',
+              maxWidth: '400px',
+              margin: '48px auto 0',
+              display: 'block',
+              padding: '16px',
+              borderRadius: '12px'
+            }}
+            onClick={() => history.goBack()}
+          >
+            ← 내 결과로 돌아가기
           </button>
         </div>
       );
