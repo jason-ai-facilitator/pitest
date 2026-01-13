@@ -617,9 +617,22 @@
 
     const TestPage = () => {
       const history = useHistory();
-      const [index, setIndex] = useState(0);
-      const [answers, setAnswers] = useState({});
+      const [index, setIndex] = useState(() => {
+        const saved = localStorage.getItem('archetype_progress');
+        return saved ? JSON.parse(saved).index : 0;
+      });
+      const [answers, setAnswers] = useState(() => {
+        const saved = localStorage.getItem('archetype_progress');
+        return saved ? JSON.parse(saved).answers : {};
+      });
       const [isFinishing, setIsFinishing] = useState(false);
+
+      // Save progress whenever it changes
+      useEffect(() => {
+        if (!isFinishing) {
+          localStorage.setItem('archetype_progress', JSON.stringify({ index, answers }));
+        }
+      }, [index, answers, isFinishing]);
 
       const currentQuestion = questions[index] || questions[0];
       const progress = ((index) / questions.length) * 100;
@@ -642,6 +655,7 @@
         setIsFinishing(true);
         setTimeout(() => {
           localStorage.setItem('archetype_answers', JSON.stringify(finalAnswers));
+          localStorage.removeItem('archetype_progress'); // Clear progress after completion
           history.push('/result');
         }, 2000);
       };
@@ -682,9 +696,34 @@
                 }}
               >
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '0 0 40px 0' }}>
-                  <div style={{ marginBottom: '24px' }}>
-                    <span className="text-small" style={{ color: 'var(--color-accent)', marginBottom: '8px', display: 'block', fontWeight: 600 }}>QUESTION {index + 1} / {questions.length}</span>
-                    <div style={{ width: '60px', height: '3px', background: 'linear-gradient(90deg, var(--color-accent) 0%, #5a8fb8 100%)', borderRadius: '2px' }}></div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
+                    <div>
+                      <span className="text-small" style={{ color: 'var(--color-accent)', marginBottom: '8px', display: 'block', fontWeight: 600 }}>QUESTION {index + 1} / {questions.length}</span>
+                      <div style={{ width: '60px', height: '3px', background: 'linear-gradient(90deg, var(--color-accent) 0%, #5a8fb8 100%)', borderRadius: '2px' }}></div>
+                    </div>
+                    {index > 0 && (
+                      <button
+                        onClick={() => setIndex(prev => prev - 1)}
+                        style={{
+                          background: '#f0f0f0',
+                          border: 'none',
+                          color: '#666',
+                          fontSize: '12px',
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                          padding: '6px 12px',
+                          borderRadius: '20px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                          transition: 'background 0.2s'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.background = '#e0e0e0'}
+                        onMouseLeave={(e) => e.currentTarget.style.background = '#f0f0f0'}
+                      >
+                        ← 이전
+                      </button>
+                    )}
                   </div>
                   <h2 className="text-h1" style={{ fontSize: '20px', lineHeight: '1.6', marginBottom: '0' }}>{currentQuestion.text}</h2>
                 </div>
