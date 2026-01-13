@@ -764,6 +764,7 @@
     }
 
     const ResultPage = () => {
+      const history = useHistory();
       const [results, setResults] = useState(null);
       useEffect(() => {
         const saved = localStorage.getItem('archetype_answers');
@@ -804,9 +805,13 @@
             <RadarChart data={results.allScores} />
 
             <div style={{ marginTop: '40px', textAlign: 'center' }}>
-              <Link to="/explore" className="btn-secondary" style={{ display: 'inline-block', width: 'auto', padding: '12px 24px', textDecoration: 'none' }}>
+              <button
+                onClick={() => history.push('/explore')}
+                className="btn-secondary"
+                style={{ display: 'inline-block', width: 'auto', padding: '12px 24px', cursor: 'pointer' }}
+              >
                 다른 아키타입 전체 보기
-              </Link>
+              </button>
             </div>
           </div>
         </div>
