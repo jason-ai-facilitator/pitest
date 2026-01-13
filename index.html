@@ -957,19 +957,44 @@
       );
     }
 
-    const AnalysisSection = ({ primary, secondary, underUsed }) => {
+    // Inject marked.js for Markdown parsing
+    const script = document.createElement('script');
+    script.src = "https://cdn.jsdelivr.net/npm/marked/marked.min.js";
+    document.head.appendChild(script);
+
+    const AnalysisSection = ({ primary, secondary, underUsed, allScores }) => {
       const [status, setStatus] = useState('idle'); // idle, analyzing, done
       const [analysis, setAnalysis] = useState(null);
 
-      const generateAnalysis = () => {
+      const generateAnalysis = async () => {
         setStatus('analyzing');
 
-        // Simulating AI/Server delay
-        setTimeout(() => {
-          const text = generateInterpretation(primary, secondary, underUsed);
-          setAnalysis(text);
+        try {
+          const response = await fetch('/api/analyze', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              primaryId: primary.id,
+              secondaryId: secondary.id,
+              underUsedIds: [underUsed.id],
+              scores: allScores
+            })
+          });
+
+          if (!response.ok) throw new Error('API request failed');
+
+          const data = await response.json();
+          // Use marked.js if available, else fallback to raw text
+          const htmlContent = window.marked ? window.marked.parse(data.analysis) : data.analysis;
+          setAnalysis(htmlContent);
           setStatus('done');
-        }, 2200);
+        } catch (error) {
+          console.error('AI Analysis Error:', error);
+          // Fallback to rule-based analysis if AI fails
+          const fallback = generateInterpretation(primary, secondary, underUsed);
+          setAnalysis(fallback);
+          setStatus('done');
+        }
       };
 
       if (status === 'idle') {
@@ -997,8 +1022,8 @@
           <div style={{ background: '#F5F5F7', padding: '40px 20px', borderRadius: '8px', textAlign: 'center' }}>
             <div className="spinner"></div>
             <p className="text-small" style={{ marginTop: '16px', color: '#666' }}>
-              답변 패턴을 분석하고 있습니다...<br />
-              <span style={{ fontSize: '12px', color: '#999' }}>Primary와 Shadow 역학 관계 계산 중</span>
+              AI가 당신의 문제 해결 DNA를 심층 분석하고 있습니다...<br />
+              <span style={{ fontSize: '12px', color: '#999' }}>Gemini Pro 알고리즘 가동 중 (Vercel Secure Gate)</span>
             </p>
             <style>{`
               .spinner {
@@ -1020,10 +1045,16 @@
           style={{ background: '#fff', border: '1px solid #111', padding: '24px', borderRadius: '8px', position: 'relative', boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}
         >
           <div style={{ position: 'absolute', top: -12, left: 24, background: '#111', color: '#fff', padding: '4px 12px', fontSize: '12px', fontWeight: 700, borderRadius: '12px' }}>
-            AI REPORT
+            AI REPORT (SECURE)
           </div>
-          <h3 className="text-h2" style={{ marginTop: '16px' }}>당신의 문제 해결 DNA</h3>
-          <p className="text-body" style={{ whiteSpace: 'pre-line', marginTop: '16px' }} dangerouslySetInnerHTML={{ __html: analysis }}></p>
+          <h3 className="text-h2" style={{ marginTop: '16px' }}>AI 종합 분석 결과</h3>
+          <div className="analysis-content" style={{ fontSize: '15px', lineHeight: '1.7', marginTop: '16px' }} dangerouslySetInnerHTML={{ __html: analysis }}></div>
+          <style>{`
+            .analysis-content h1, .analysis-content h2, .analysis-content h3 { margin-top: 20px; font-size: 18px; color: var(--color-accent); }
+            .analysis-content ul, .analysis-content ol { padding-left: 20px; margin: 12px 0; }
+            .analysis-content p { margin-bottom: 12px; }
+            .analysis-content strong { color: #111; }
+          `}</style>
         </motion.div>
       );
     };

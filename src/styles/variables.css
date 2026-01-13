@@ -1,0 +1,38 @@
+:root {
+  /* Colors */
+  --color-bg: #FAFAFA; /* Calm off-white */
+  --color-surface: #FFFFFF;
+  --color-text-main: #222222;
+  --color-text-sub: #666666;
+  --color-text-muted: #999999;
+  
+  --color-accent: #3344DD; /* Academic Deep Blue */
+  --color-accent-subtle: #EBEFFE;
+  
+  --color-border: #EEEEEE;
+  
+  /* Archetype Card Colors (Muted) */
+  --color-card-bg: #F5F5F7;
+  
+  /* Typography */
+  /* Using system font stack for best mobile native feel and load speed */
+  --font-main: -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  
+  /* Spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  
+  /* Layout */
+  --max-width: 460px; /* Mobile width constraint for desktop view */
+  --header-height: 56px;
+  
+  /* Animation */
+  --ease-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}

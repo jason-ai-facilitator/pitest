@@ -1,0 +1,85 @@
+@import './variables.css';
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html {
+    font-size: 16px;
+}
+
+body {
+    font-family: var(--font-main);
+    background-color: var(--color-bg);
+    color: var(--color-text-main);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+    width: 100%;
+}
+
+.app-container {
+    width: 100%;
+    max-width: var(--max-width);
+    background-color: var(--color-surface);
+    min-height: 100vh;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.03);
+    /* Subtle separation on desktop */
+}
+
+/* Typography Utilities */
+.text-h1 {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: var(--space-4);
+    letter-spacing: -0.02em;
+}
+
+.text-h2 {
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.35;
+    margin-bottom: var(--space-3);
+    letter-spacing: -0.01em;
+}
+
+.text-body {
+    font-size: 16px;
+    color: var(--color-text-sub);
+    margin-bottom: var(--space-3);
+}
+
+.text-small {
+    font-size: 14px;
+    color: var(--color-text-muted);
+}
+
+/* Button Reset */
+button {
+    border: none;
+    background: none;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+/* Utility */
+.screen {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-6);
+    padding-bottom: var(--space-10);
+}
