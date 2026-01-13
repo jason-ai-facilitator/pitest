@@ -17,6 +17,10 @@
   <!-- Babel for JSX -->
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
+  <!-- External Data -->
+  <script src="src/data/questions.js"></script>
+  <script src="src/data/archetypes.js"></script>
+
   <style>
     /* CSS Variables */
     :root {
@@ -160,6 +164,25 @@
       font-weight: 600;
       color: inherit;
     }
+
+    .container {
+      width: 100%;
+      padding: var(--space-6);
+      max-width: var(--max-width);
+      margin: 0 auto;
+    }
+
+    .content-block h3 {
+      font-size: 1.1rem;
+      margin-top: 1.5rem;
+      margin-bottom: 0.5rem;
+      color: var(--color-accent);
+    }
+
+    .content-block p {
+      margin-bottom: 1rem;
+      line-height: 1.6;
+    }
   </style>
 </head>
 
@@ -172,284 +195,58 @@
     const { motion, AnimatePresence } = window.Motion;
 
     // --- DATA ---
-    const questions = [
-      { id: 1, text: "카페나 식당에 가면 사람들이 서비스를 이용할 때 어디서 멈칫거리는지 나도 모르게 관찰하곤 한다.", archetype: "Anthropologist" },
-      { id: 2, text: "회의 내용이 뒤섞여 있으면 \"잠시만요, 지금 무슨 이야기를 하는 중이죠?\"라고 범위를 좁히고 싶다.", archetype: "Cartographer" },
-      { id: 3, text: "누가 \"이게 대박이래요\"라고 하면, \"그게 통한다는 구체적인 근거가 있나요?\"라고 확인하고 싶어진다.", archetype: "Scientist" },
-      { id: 4, text: "다들 찬성하는 분위기일 때, 구석에서 표정이 안 좋은 사람에게 \"혹시 걱정되는 부분이 있으신가요?\"라고 묻고 싶다.", archetype: "Journalist" },
-      { id: 5, text: "새로운 일을 시작할 때, \"이걸 하느라 우리가 포기해야 하는 다른 중요한 일은 없을까?\"를 먼저 계산해본다.", archetype: "Economist" },
-      { id: 6, text: "데이터 그래프를 보는 것보다, 그 제품을 쓰는 사람의 표정이나 손짓을 직접 한 번 보는 게 더 믿음직하다.", archetype: "Anthropologist" },
-      { id: 7, text: "아이디어가 아무리 좋아도, 우리가 지금 해결할 수 있는 영역 밖의 일이면 과감히 제외해야 마음이 편하다.", archetype: "Cartographer" },
-      { id: 8, text: "\"느낌이 좋다\"는 말보다는, 작게라도 직접 테스트해 본 결과가 있어야 다음 단계로 넘어갈 용기가 난다.", archetype: "Scientist" },
-      { id: 9, text: "우리를 칭찬하는 말보다는, 우리 서비스에 대해 아주 구체적으로 불만을 말하는 사람의 이야기에 더 귀가 쫑긋한다.", archetype: "Journalist" },
-      { id: 10, text: "아무리 멋진 제안이라도 우리 팀의 현재 시간과 에너지를 너무 많이 뺏는다면, 신중하게 거절해야 한다고 생각한다.", archetype: "Economist" },
-      { id: 11, text: "사람들이 말로는 \"좋아요\"라고 해도, 실제로 쓸 때 왠지 머뭇거리는 그 순간을 포착할 때 \"진짜 문제\"를 찾았다고 느낀다.", archetype: "Anthropologist" },
-      { id: 12, text: "논의가 길어지면 화이트보드에 지금 우리가 이야기하는 주제들을 상자에 담아 구조를 그려보고 싶어진다.", archetype: "Cartographer" },
-      { id: 13, text: "내 생각이 틀릴 수도 있다는 것을 인정하고, \"이게 왜 안 될 수도 있지?\"를 미리 따져보는 과정이 즐겁다.", archetype: "Scientist" },
-      { id: 14, text: "\"다들 그렇게 생각해요\"라는 말은 믿지 않는다. \"정확히 누가, 어떤 상황에서 그렇게 말했는지\"가 훨씬 중요하다.", archetype: "Journalist" },
-      { id: 15, text: "제안을 들으면 \"이걸로 우리가 얻는 이득만큼, 잃게 되는 비용이나 수고는 얼마일까?\"를 냉정하게 따져본다.", archetype: "Economist" },
-      { id: 16, text: "일상에서 사람들이 불편함을 참고 억지로 적응해서 쓰는 '이상한 방식'들을 발견하는 게 흥미롭다.", archetype: "Anthropologist" },
-      { id: 17, text: "여러가지가 섞인 문제를 보면 우선순위 먼저 정리하고 싶다.", archetype: "Cartographer" },
-      { id: 18, text: "처음보는 확신에 찬 주장을 보면 \"주장을 뒷받침할 수 있는 구체적인 숫자나 자료가 있을까\" 생각하고 알아본다.", archetype: "Scientist" },
-      { id: 19, text: "똑똑한 한 사람의 의견보다, 여러 사람의 평범하고 생생한 삶의 이야기들이 모였을 때 진짜 문제가 선명해진다고 느낀다.", archetype: "Journalist" },
-      { id: 20, text: "좋은 의도의 사업이라도, 현실적으로 예산이 계속 버텨줄 수 있는 구조인지부터 냉정하게 살핀다.", archetype: "Economist" },
-      { id: 21, text: "다들 \"이게 원인이야\"라고 할 때, 왠지 설명되지 않는 구석이 하나라도 있으면 끝까지 찝찝함을 느낀다.", archetype: "Detective" },
-      { id: 22, text: "문제가 생긴 건 누구 한 명의 잘못이라기보다, 그렇게 행동할 수밖에 없게 만든 '상황의 연결' 때문이라고 생각한다.", archetype: "Systems Thinker" },
-      { id: 23, text: "우리가 지금 쓰고 있는 '공정'이나 '성공' 같은 단어들을 팀원 모두가 똑같은 의미로 쓰고 있는지 의심해본다.", archetype: "Philosopher" },
-      { id: 24, text: "계획대로 잘 진행될 때조차 \"만약 갑자기 상황이 바뀌면 우리는 어떻게 대처하지?\"라며 플랜 B를 머릿속으로 그린다.", archetype: "Scenario Planner" },
-      { id: 26, text: "남들이 다 아는 정보보다, 아무도 주목하지 않았던 사소한 기록이나 흔적에서 문제의 실마리를 찾으려 한다.", archetype: "Detective" },
-      { id: 27, text: "하나를 고치면 다른 곳에서 또 문제가 터지는 상황을 방지하기 위해, 문제들의 '얽히고설킨 관계'를 먼저 그린다.", archetype: "Systems Thinker" },
-      { id: 28, text: "\"이건 효율적이야\"라는 말을 들으면 \"그런데 우리에게 '효율'이 왜 그렇게 중요한 가치죠?\"라고 묻고 싶다.", archetype: "Philosopher" },
-      { id: 29, text: "해결책이 가져올 좋은 결과보다, 그로 인해 생길지도 모를 예상치 못한 부작용 리스트가 먼저 머릿속에 떠오른다.", archetype: "Scenario Planner" },
-      { id: 31, text: "사건의 앞뒤가 안 맞을 때 \"왜?\"라고 끈질기게 질문해서, 상대방이 미처 생각지 못한 부분을 깨닫게 하기도 한다.", archetype: "Detective" },
-      { id: 32, text: "눈앞의 불을 끄는 것보다, 이 문제가 계속 반복되게 만드는 '보이지 않는 판'이 무엇인지 찾는 데 더 집중한다.", archetype: "Systems Thinker" },
-      { id: 33, text: "\"원래 다 이래\"라는 말을 들을 때 가장 답답하며, 당연하다고 생각하는 전제들을 하나씩 무너뜨려 보고 싶다.", archetype: "Philosopher" },
-      { id: 34, text: "당장 내일의 성과보다, 이 결정이 1년 뒤 우리 팀에 어떤 영향을 줄지를 생각하면 가끔 밤잠을 설친다.", archetype: "Scenario Planner" },
-      { id: 36, text: "사건의 흐름을 짚어보며 남들이 놓친 미세한 모순을 찾아냈을 때 기쁨을 느낀다.", archetype: "Detective" },
-      { id: 37, text: "한 쪽을 누르면 다른 쪽이 튀어나오는 풍선 효과를 고려해서, 전체적인 균형을 맞추는 고민을 많이 한다.", archetype: "Systems Thinker" },
-      { id: 38, text: "당장의 해결책보다 '우리가 문제를 바라보는 방식' 자체가 틀렸을지도 모른다는 의심을 한다.", archetype: "Philosopher" },
-      { id: 39, text: "\"상황이 최악으로 흘러간다면 어떤 일이 벌어질까?\"를 시나리오로 그려보는 것이 불안을 줄이는 최고의 방법이라 생각한다.", archetype: "Scenario Planner" },
-      { id: 44, text: "누가 불만을 말하면 \"이게 개인적인 감정인지, 공적인 가치인지\"를 먼저 심사하고 싶어진다.", archetype: "Judge" },
-      { id: 49, text: "해야 할 일들이 많을 때, 지금 우리가 해결할 수 있는 '단 하나의 핵심 문제'를 추려내고 싶다.", archetype: "Judge" },
-      { id: 54, text: "논리적으로 설득력이 없으면, 아무리 반짝이는 해결책이라도 \"아직 해결할 준비가 안 됐다\"고 선을 긋는다.", archetype: "Judge" },
-      { id: 59, text: "\"다 중요해 보여요\"라는 팀원들에게 가장 중요한 단 하나를 고르라고 독려하는 편이다.", archetype: "Judge" }
-    ];
+    const questions = window.questions;
+    const archetypes = window.archetypes;
 
-    const archetypes = [
-      {
-        id: 'Anthropologist',
-        name: '인류학자 (The Anthropologist)',
-        oneLiner: '침묵 속의 질서를 발굴하는 관찰의 거장',
-        coreQuestion: '“사람들은 실제로 어떻게 행동하는가?”',
-        desc: '문제의 파편들을 수집하는 단계입니다. 인류학자가 인간의 무의식적 행동(행동 데이터)을 포착하면, 저널리스트가 그 행동 뒤에 숨은 이해관계자들의 목소리(언어 데이터)를 채집합니다.',
-        fullContent: `
-          <h3>1. 핵심 역량: 가설을 압도하는 ‘맥락적 지능’</h3>
-          <p>인류학자의 가장 강력한 무기는 <strong>‘판단하지 않는 응시’</strong>입니다. 대부분의 기획자나 문제 해결사들은 현장에 나가기 전 이미 가설을 세우고, 그 가설을 지지할 증거만을 수집하려는 경향이 있습니다. 하지만 인류학자는 자신의 편견을 의도적으로 삭제합니다.</p>
-          <p><strong>언어 너머의 진실</strong>: 사람들은 자신의 욕망을 완벽하게 언어로 표현하지 못합니다. "왜 이 기능을 사용하지 않습니까?"라는 질문에 돌아오는 대답은 대개 논리적으로 꾸며진 사후 변명인 경우가 많습니다. 인류학자는 그 대답을 신뢰하는 대신, 답변자의 미세한 눈떨림, 버튼을 누르기 전의 망설임, 혹은 기존 시스템의 불편함을 견디기 위해 스스로 고안해낸 ‘기괴한 우회로’를 포착합니다.</p>
-          
-          <h3>2. 팀 내의 역할: 집단적 환각을 깨우는 ‘현실 정박지’</h3>
-          <p>팀 프로젝트가 진행될수록 구성원들은 자기들이 만든 논리와 화려한 아이디어에 매몰되어, 그것이 실제 세상과 연결되어 있다는 착각, 즉 '논리적 환각'에 빠지기 쉽습니다. 이때 인류학자는 팀의 발을 지상으로 끌어내리는 결정적인 역할을 수행합니다.</p>
-          <p><strong>증거 중심의 제동</strong>: 팀이 공들여 쌓아 올린 가설이 현장의 실제 모습과 충돌할 때, 인류학자는 가차 없이 그 균열을 보고합니다. 이는 팀의 사기를 꺾기 위함이 아니라, 잘못된 방향으로 질주하여 자원을 낭비하는 것을 막으려는 고결한 보호 본능입니다.</p>
-
-          <h3>3. 지적 그림자: 관찰의 함정과 결정의 지연</h3>
-          <p>모든 아키타입은 그 강점만큼이나 짙은 그림자를 가집니다. 인류학자가 경계해야 할 지점은 <strong>‘관찰의 무한 루프’</strong>입니다.</p>
-          <p><strong>완벽한 데이터에 대한 집착</strong>: 현장은 늘 가변적이며 예외 사례가 존재합니다. 인류학자는 그 예외 하나조차 놓치지 않으려다 보니 결론을 내는 속도가 늦어질 수 있습니다.</p>
-
-          <h3>4. 존재의 가치: 당신이 없으면 팀이 겪게 될 비극</h3>
-          <p>인류학자가 없는 팀은 <strong>‘정답 같은 오답’</strong>을 향해 질주합니다. 논리적으로는 완벽하고 기술적으로도 훌륭한 해결책을 내놓고도, 정작 시장에서 "왜 아무도 쓰지 않는가?"라는 질문에 직면하게 됩니다.</p>
-
-          <h3>5. 당신을 위한 제언: 통찰을 행동으로 전환하는 법</h3>
-          <p>불완전한 결단의 수용: 때로는 모든 의문이 해소되지 않았더라도, 지금까지 발견한 '가장 확실한 진실'을 바탕으로 팀의 다음 단계에 동참하는 결단력이 필요합니다.</p>
-        `,
-        blindSpot: '관찰의 무한 루프에 빠져 실행을 지연시킬 수 있음'
-      },
-      {
-        id: 'Journalist',
-        name: '저널리스트 (The Journalist)',
-        oneLiner: '파편화된 증언을 엮어 문제의 진실을 재구성하는 맥락의 거장',
-        coreQuestion: '“누가 이 문제로 인해 가장 큰 영향을 받는가?”',
-        desc: '문제를 다양한 이해관계자들이 각자의 욕망과 결핍을 투영하며 만들어낸 \'살아있는 서사\'로 받아들입니다.',
-        fullContent: `
-          <h3>1. 핵심 역량: 가려진 목소리를 찾아내는 ‘탐사적 경청’</h3>
-          <p>저널리스트의 진정한 힘은 단순히 받아적는 것이 아니라, <strong>‘질문의 각도’</strong>를 바꾸는 데 있습니다.</p>
-          <p><strong>행간을 읽는 심문</strong>: 사람들은 때로 자신을 보호하기 위해, 혹은 조직의 논리에 따라 정제된 답변만을 내놓습니다. 저널리스트는 언어의 표면 아래 숨겨진 정치적 맥락과 감정적 동기를 읽어냅니다.</p>
-
-          <h3>2. 팀 내의 역할: 집단적 편향을 깨는 ‘서사의 편집자’</h3>
-          <p><strong>관점의 민주화</strong>: 특정 부서의 논리가 팀을 지배하려 할 때, 저널리스트는 수집된 다양한 목소리를 근거로 "이것은 개발팀의 문제정의일 뿐, 운영팀의 시각에서는 전혀 다른 문제일 수 있다"는 사실을 환기시킵니다.</p>
-
-          <h3>3. 지적 그림자: 서사의 함정과 중립의 딜레마</h3>
-          <p><strong>기록자의 소외</strong>: 너무 많은 목소리를 담으려다 보니, 정작 "그래서 우리의 입장은 무엇인가?"라는 결론 앞에서 망설일 수 있습니다.</p>
-
-          <h3>4. 존재의 가치: 당신이 없으면 팀이 겪게 될 비극</h3>
-          <p>저널리스트가 없는 팀은 <strong>‘정치적 맹점’</strong>에 빠집니다. 기술적으로는 훌륭하지만 특정 집단의 반발로 실행조차 못 하는 죽은 해결책을 내놓게 됩니다.</p>
-
-          <h3>5. 당신을 위한 제언: 기록을 통찰로 전환하는 법</h3>
-          <p><strong>헤드라인을 먼저 써보기</strong>: 수집한 수많은 목소리를 한 문장으로 압축한다면 무엇이 될지 끊임없이 자문하십시오. 그 헤드라인이 곧 팀이 풀어야 할 <strong>‘문제의 본질’</strong>입니다.</p>
-        `,
-        blindSpot: '너무 많은 목소리를 담으려다 결론을 내리지 못하는 딜레마'
-      },
-      {
-        id: 'Detective',
-        name: '탐정 (The Detective)',
-        oneLiner: '현상이라는 알리바이를 깨고 본질적인 원인을 추적하는 인과의 추적자',
-        coreQuestion: '“왜 이러한 현상이 반복되는가?”',
-        desc: '현상 뒤에 숨겨진 인과관계와 구조적 역학을 분석하여 \'문제의 뿌리\'를 찾아냅니다.',
-        fullContent: `
-          <h3>1. 핵심 역량: 증상을 원인으로 착각하지 않는 ‘비판적 추론’</h3>
-          <p>탐정의 가장 날카로운 무기는 <strong>‘인과 관계의 정밀한 해체’</strong>입니다.</p>
-          <p><strong>가짜 문제(Symptom)의 선별</strong>: "매출이 떨어진다"는 현상을 문제 그 자체로 보지 않고 몸이 보내는 '발열' 증상으로 봅니다. 진짜 병명(Root Cause)을 찾을 때까지 추적을 멈추지 않습니다.</p>
-
-          <h3>2. 팀 내의 역할: 헛수고를 방지하는 ‘지적 브레이크’</h3>
-          <p><strong>임시방편의 거부</strong>: "이것은 증상을 완화할 뿐, 문제를 해결하지 못한다"는 진단으로 팀이 장기적인 자원 낭비를 하지 않도록 막아줍니다.</p>
-
-          <h3>3. 지적 그림자: 분석의 늪과 냉소주의</h3>
-          <p><strong>분석 마비</strong>: 완벽한 인과 관계를 증명하려다 보면 결론을 내리는 데 너무 많은 시간을 소요할 수 있습니다.</p>
-
-          <h3>4. 존재의 가치: 당신이 없으면 팀이 겪게 될 비극</h3>
-          <p>탐정이 없는 팀은 <strong>‘두더지 잡기 게임’</strong>을 반복하게 됩니다. 문제를 해결했다고 생각하는 순간, 똑같은 문제가 다른 모습으로 다시 나타납니다. 근본 원인을 제거하지 않았기 때문입니다.</p>
-        `,
-        blindSpot: '완벽한 인과 증명에 집착하여 실행 타이밍을 놓침'
-      },
-      {
-        id: 'Systems Thinker',
-        name: '시스템 사고가 (The Systems Thinker)',
-        oneLiner: '보이지 않는 연결 고리를 추적해 문제의 역학 구조를 해체하는 입체적 전략가',
-        coreQuestion: '“이 문제는 어떤 구조 속에서 작동하는가?”',
-        desc: '문제를 다양한 요소들이 서로 에너지를 주고받으며 유지되는 \'유동적인 생태계\'로 파악합니다.',
-        fullContent: `
-          <h3>1. 핵심 역량: 선형적 사고를 넘어서는 ‘입체적 통찰’</h3>
-          <p>시스템 사고가의 가장 강력한 무기는 <strong>‘피드백 루프의 파악’</strong>입니다. 요소들 사이의 <strong>‘관계’</strong> 자체가 문제의 본질임을 꿰뚫어 봅니다.</p>
-
-          <h3>2. 팀 내의 역할: 재앙을 막는 ‘리스크 시뮬레이터’</h3>
-          <p><strong>의도치 않은 결과 예방</strong>: 당장의 근시안적인 성과에 매몰되지 않고 미래의 부작용을 경고합니다.</p>
-
-          <h3>3. 지적 그림자: 과도한 복잡성과 실행의 지연</h3>
-          <p><strong>모든 것의 연결성 강조</strong>: "모든 것은 연결되어 있다"는 생각에 매몰되면 어디서부터 손을 대야 할지 모르는 상태에 빠질 수 있습니다.</p>
-
-          <h3>4. 존재의 가치: 당신이 없으면 팀이 겪게 될 비극</h3>
-          <p>시스템 사고가가 없는 팀은 <strong>‘악순환의 굴레’</strong>에 갇힙니다. 문제를 해결하기 위해 내놓은 대책이 시간이 지나 더 큰 문제를 야기하는 '코브라 효과'를 경험하게 됩니다.</p>
-        `,
-        blindSpot: '과도한 복잡성으로 인해 실행 아이디어가 나오지 않음'
-      },
-      {
-        id: 'Cartographer',
-        name: '지도제작자 (The Cartographer)',
-        oneLiner: '혼돈의 영역에 경계를 긋고 정복 가능한 지형으로 규정하는 전략적 설계자',
-        coreQuestion: '“이 문제의 범위와 경계는 어디까지인가?”',
-        desc: '문제를 우리가 발을 딛고 있는 \'지형\'으로 인식합니다. 거대한 문제 덩어리를 분석하여 우리가 해결할 수 있는 영역과 없는 영역을 구분해 냅니다.',
-        fullContent: `
-          <h3>1. 핵심 역량: 모호함을 질서로 바꾸는 ‘구조적 조망’</h3>
-          <p>지도제작자의 가장 강력한 무기는 <strong>‘추상적인 문제의 구체적 시각화’</strong>입니다.</p>
-          <p><strong>배타적 경계 설정</strong>: "무엇을 할 것인가"보다 <strong>"무엇을 건드리지 않을 것인가"</strong>를 결정하는 데 탁월합니다.</p>
-
-          <h3>2. 팀 내의 역할: 길을 잃지 않게 하는 ‘내비게이터’</h3>
-          <p><strong>자원 배분의 가이드</strong>: 팀의 한정된 시간과 비용을 어디에 투입해야 가장 효율적으로 영토를 확보할 수 있을지 전략적 우선순위를 제안합니다.</p>
-
-          <h3>3. 지적 그림자: 경직된 사고와 창의성의 위축</h3>
-          <p><strong>지나친 선 긋기</strong>: 정해진 범위 밖에서 나오는 혁신적인 아이디어를 "범위 밖"이라는 이유로 너무 일찍 쳐낼 수 있습니다.</p>
-
-          <h3>4. 존재의 가치: 당신이 없으면 팀이 겪게 될 비극</h3>
-          <p>지도제작자가 없는 팀은 <strong>‘정복할 수 없는 에베레스트’</strong> 앞에서 좌절합니다. 문제의 정의가 끝없이 확장되다 보니, 아무리 노력해도 끝이 보이지 않습니다.</p>
-        `,
-        blindSpot: '경계 밖의 혁신적인 아이디어까지 차단할 위험'
-      },
-      {
-        id: 'Philosopher',
-        name: '철학자 (The Philosopher)',
-        oneLiner: '당연함의 장막을 걷어내고 문제의 본질적 가치를 심문하는 사유의 개척자',
-        coreQuestion: '“이 문제를 가능하게 하는 전제는 무엇인가?”',
-        desc: '모두가 정답을 찾을 때 조용히 \'질문\'의 타당성을 검토합니다. 문제정의 과정에 숨어 있는 암묵적인 가정, 편견, 가치 판단을 수면 위로 끌어올립니다.',
-        fullContent: `
-           <h3>1. 핵심 역량: 전제를 뒤흔드는 ‘비판적 해체’</h3>
-           <p>철학자의 가장 강력한 무기는 <strong>‘개념의 명료화와 가정의 파괴’</strong>입니다.</p>
-           <p><strong>숨은 전제 드러내기</strong>: 우리가 당연시했던 기준들이 사실은 고정관념일 수 있음을 증명합니다.</p>
-
-           <h3>2. 팀 내의 역할: 집단지성의 ‘브레인 필터’</h3>
-           <p><strong>개념적 오류 수정</strong>: 논리적으로는 완벽해 보이지만 철학적으로 빈약한 문제정의를 걸러냅니다.</p>
-
-           <h3>3. 지적 그림자: 추상화의 늪과 소통의 장벽</h3>
-           <p><strong>무한 담론의 가능성</strong>: 근본적인 원리만 따지다 보면 "그래서 지금 당장 뭘 해야 하나?"라는 실무적인 질문에 답하기 어려워질 수 있습니다.</p>
-
-           <h3>4. 존재의 가치: 당신이 없으면 팀이 겪게 될 비극</h3>
-           <p>철학자가 없는 팀은 <strong>‘훌륭하게 정의된 오답’</strong>을 풉니다. 기술적으로 완벽하고 논리적으로 치밀하지만, 정작 세상에 내놓았을 때 "이게 왜 필요하지?"라는 본질적인 회의론에 부딪히게 됩니다.</p>
-        `,
-        blindSpot: '사유가 행동으로 이어지지 않고 공허한 말잔치에 머물 위험'
-      },
-      {
-        id: 'Scientist',
-        name: '과학자 (The Scientist)',
-        oneLiner: '주관적 확신을 객관적 실증으로 번역하는 데이터의 수호자',
-        coreQuestion: '“이 주장은 무엇으로 검증되는가?”',
-        desc: '문제정의란 아직 증명되지 않은 가설일 뿐이며, 이를 관찰 가능한 데이터와 통계로 검증 가능한 상태로 만드는 것이 숙명입니다.',
-        fullContent: `
-          <h3>1. 핵심 역량: 주장과 사실을 분리하는 ‘엄격한 객관성’</h3>
-          <p>과학자의 가장 강력한 무기는 <strong>‘검증 가능성’</strong>에 대한 집착입니다. "내 생각에는"이라는 주장을 가장 경계합니다.</p>
-
-          <h3>2. 팀 내의 역할: 집단적 낙관주의를 식히는 ‘현실의 닻’</h3>
-          <p><strong>근거 기반의 제동</strong>: "우리의 느낌"이 아닌 "데이터의 흐름"을 제시하며 잘못된 방향으로의 질주를 막습니다.</p>
-
-          <h3>3. 지적 그림자: 데이터 만능주의와 속도의 저하</h3>
-          <p><strong>완벽한 데이터에 대한 갈증</strong>: 모든 것이 데이터로 증명되어야 움직이려다 보니, 데이터가 부족한 신규 영역에서는 결정을 내리지 못할 수 있습니다.</p>
-
-          <h3>4. 존재의 가치: 당신이 없으면 팀이 겪게 될 비극</h3>
-          <p>과학자가 없는 팀은 <strong>‘신앙 기반의 프로젝트’</strong>를 수행합니다. 근거 없는 확신으로 시작해, 결과가 나쁠 때는 "운이 없었다"고 치부합니다.</p>
-        `,
-        blindSpot: '데이터가 모일 때까지 결정을 미루다 시기를 놓침'
-      },
-      {
-        id: 'Economist',
-        name: '경제학자 (The Economist)',
-        oneLiner: '한정된 자원의 가치를 극대화하고 선택의 대가를 산출하는 현실의 균형추',
-        coreQuestion: '“이 문제에는 어떤 비용과 대가가 수반되는가?”',
-        desc: '문제정의를 \'어떤 가치를 위해 무엇을 지불할 것인가\'를 결정하는 자원 배분의 문제로 봅니다.',
-        fullContent: `
-          <h3>1. 핵심 역량: 손익을 넘어선 ‘트레이드오프’ 분석</h3>
-          <p>경제학자의 가장 강력한 무기는 <strong>‘기회비용의 가시화’</strong>입니다. "A를 해결하기 위해 우리는 무엇을 포기했는가?"를 끊임없이 묻습니다.</p>
-
-          <h3>2. 팀 내의 역할: 지속 가능성을 담보하는 ‘전략적 필터’</h3>
-          <p><strong>비현실적 정의의 차단</strong>: 경제적으로 타산이 맞지 않거나 조직의 역량을 초과하는 문제정의를 걸러냅니다.</p>
-
-          <h3>3. 지적 그림자: 숫자의 함정과 가치의 협소화</h3>
-          <p><strong>계량화할 수 없는 가치의 경시</strong>: 감동, 신뢰, 유대감 등 숫자로 즉각 환산되지 않는 가치를 '비효율'로 치부할 위험이 있습니다.</p>
-
-          <h3>4. 존재의 가치: 당신이 없으면 팀이 겪게 될 비극</h3>
-          <p>경제학자가 없는 팀은 <strong>‘우아한 파산’</strong>을 맞이합니다. 정의된 문제는 훌륭하지만, 정작 그것을 유지할 자원이 고갈되어 사장됩니다.</p>
-        `,
-        blindSpot: '숫자로 환산되지 않는 정성적 가치를 무시할 수 있음'
-      },
-      {
-        id: 'Scenario Planner',
-        name: '시나리오 플래너 (The Scenario Planner)',
-        oneLiner: '현재의 개입이 불러올 미래의 파동을 예측하는 시간의 설계자',
-        coreQuestion: '“개입 이후에는 어떤 결과가 발생할 수 있는가?”',
-        desc: '문제를 시간의 흐름에 따라 변모하는 \'역동적인 과정\'으로 이해합니다.',
-        fullContent: `
-          <h3>1. 핵심 역량: 나비효과를 읽어내는 ‘미래 예측적 통찰’</h3>
-          <p>시나리오 플래너의 가장 강력한 무기는 <strong>‘다중 시나리오 설계’</strong>입니다. 1차 결과 뒤에 숨은 2차, 3차 파생 효과를 읽어냅니다.</p>
-
-          <h3>2. 팀 내의 역할: 근시안적 사고를 깨는 ‘미래의 수호자’</h3>
-          <p><strong>부작용의 선제적 방어</strong>: "지금 이렇게 하면 나중에 이런 문제가 생긴다"는 경고를 통해 더 책임감 있는 결정을 유도합니다.</p>
-
-          <h3>3. 지적 그림자: 기우와 실행의 주저</h3>
-          <p><strong>지나친 걱정</strong>: 발생 확률이 낮은 부정적 시나리오에 과도하게 몰입하면, 꼭 필요한 도전조차 "위험하다"며 가로막을 수 있습니다.</p>
-
-          <h3>4. 존재의 가치: 당신이 없으면 팀이 겪게 될 비극</h3>
-          <p>시나리오 플래너가 없는 팀은 <strong>‘단기 승리 후 장기 패배’</strong>의 늪에 빠집니다. 오늘의 해결책이 내일의 괴물이 되어 돌아옵니다.</p>
-        `,
-        blindSpot: '부정적 시나리오에 몰입해 도전을 주저함'
-      },
-      {
-        id: 'Judge',
-        name: '판사 (The Judge)',
-        oneLiner: '문제의 본질적 가치와 개입의 정당성을 선언하는 최후의 보루',
-        coreQuestion: '“이것은 우리가 개입해야 할 문제인가?”',
-        desc: '이 문제가 공적인 가치가 있는지, 우리가 해결할 자격과 책임이 있는지 냉정하게 판결합니다.',
-        fullContent: `
-          <h3>1. 핵심 역량: 문제의 격을 결정하는 ‘정당성 심사’</h3>
-          <p>판사의 가장 강력한 무기는 <strong>‘분별력과 결단력’</strong>입니다. 단순한 불편함(Complaint)과 진짜 문제(Problem)를 엄격히 구분합니다.</p>
-
-          <h3>2. 팀 내의 역할: 불필요한 질주를 멈추는 ‘최종 게이트키퍼’</h3>
-          <p><strong>우선순위의 최종 확정</strong>: "우리가 이번에 집중할 문제는 이것이다"라고 선언하여 팀에게 확신을 줍니다.</p>
-
-          <h3>3. 지적 그림자: 독단적 판결과 공감의 결여</h3>
-          <p><strong>권위주의적 태도</strong>: "그건 문제가 아니다"라는 단정적인 태도는 팀원들의 자발적인 발견 의지를 꺾을 수 있습니다.</p>
-
-          <h3>4. 존재의 가치: 당신이 없으면 팀이 겪게 될 비극</h3>
-          <p>판사가 없는 팀은 <strong>‘모두의 요구에 휘둘리는 난파선’</strong>이 됩니다. 논리적으로는 완벽할지 모르나 명분 싸움에서 패배하게 됩니다.</p>
-        `,
-        blindSpot: '권위적인 태도로 팀의 창의적 소통을 막을 수 있음'
-      }
-    ];
+    const archetypeIcons = {
+      'Anthropologist': '🔍',
+      'Journalist': '📰',
+      'Detective': '🕵️',
+      'Systems Thinker': '🌐',
+      'Cartographer': '🗺️',
+      'Philosopher': '💭',
+      'Scientist': '🔬',
+      'Economist': '💰',
+      'Scenario Planner': '🎯',
+      'Judge': '⚖️'
+    };
 
     const calculateResults = (answers) => {
-      const scores = {};
-      questions.forEach(q => {
-        if (!scores[q.archetype]) scores[q.archetype] = 0;
+      const archetypeCounts = {};
+      const archetypeSums = {};
+
+      // Initialize counts and sums for all archetypes
+      archetypes.forEach(a => {
+        archetypeCounts[a.id] = 0;
+        archetypeSums[a.id] = 0;
       });
+
+      // Count how many questions belong to each archetype
+      questions.forEach(q => {
+        if (archetypeCounts.hasOwnProperty(q.archetype)) {
+          archetypeCounts[q.archetype]++;
+        }
+      });
+
+      // Sum the user's answers
       Object.entries(answers).forEach(([qId, value]) => {
         const q = questions.find(q => q.id === Number(qId));
-        if (q) scores[q.archetype] += value;
+        if (q && archetypeSums.hasOwnProperty(q.archetype)) {
+          archetypeSums[q.archetype] += value;
+        }
       });
+
+      // Calculate percentage: (Sum / (Count * 5)) * 100
+      const scores = {};
+      Object.keys(archetypeSums).forEach(id => {
+        const count = archetypeCounts[id];
+        if (count > 0) {
+          scores[id] = Math.round((archetypeSums[id] / (count * 5)) * 100);
+        } else {
+          scores[id] = 0;
+        }
+      });
+
       const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
       return {
         primary: sorted[0] ? sorted[0][0] : null,
@@ -501,8 +298,8 @@
                 <strong style={{ color: 'var(--color-accent)' }}>가장 먼저 꺼내 드는 사고 도구</strong>를 진단합니다.
               </p>
               <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap', marginTop: '20px' }}>
-                <span style={{ padding: '6px 16px', background: '#f0f4f8', borderRadius: '20px', fontSize: '13px', color: '#555' }}>⏱️ 소요시간 3분</span>
-                <span style={{ padding: '6px 16px', background: '#f0f4f8', borderRadius: '20px', fontSize: '13px', color: '#555' }}>📊 40개 문항</span>
+                <span style={{ padding: '6px 16px', background: '#f0f4f8', borderRadius: '20px', fontSize: '13px', color: '#555' }}>⏱️ 소요시간 5분 내외</span>
+                <span style={{ padding: '6px 16px', background: '#f0f4f8', borderRadius: '20px', fontSize: '13px', color: '#555' }}>📊 {questions.length}개 문항</span>
                 <span style={{ padding: '6px 16px', background: '#f0f4f8', borderRadius: '20px', fontSize: '13px', color: '#555' }}>🎯 10가지 유형</span>
               </div>
             </div>
@@ -599,7 +396,11 @@
       const history = useHistory();
       const [index, setIndex] = useState(() => {
         const saved = localStorage.getItem('archetype_progress');
-        return saved ? JSON.parse(saved).index : 0;
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          return parsed.index >= questions.length ? 0 : parsed.index;
+        }
+        return 0;
       });
       const [answers, setAnswers] = useState(() => {
         const saved = localStorage.getItem('archetype_progress');
@@ -624,7 +425,10 @@
         // Wait for animation
         setTimeout(() => {
           if (index < questions.length - 1) {
-            setIndex(prev => prev + 1);
+            setIndex(prev => {
+              const next = prev + 1;
+              return next < questions.length ? next : prev;
+            });
           } else {
             finishTest(newAnswers);
           }
@@ -640,6 +444,13 @@
         }, 2000);
       };
 
+      const getRound = () => {
+        if (index < 14) return { title: "Round 1: 발견과 탐색", desc: "현상의 관찰과 문제의 범위를 설정하는 초기 단계" };
+        if (index < 27) return { title: "Round 2: 심층 해석과 통찰", desc: "보이지 않는 구조와 맥락을 파악하고 의심하는 단계" };
+        return { title: "Round 3: 현실 검증과 결단", desc: "실행 가능성을 따지고 최종적인 가치를 판단하는 마무리 단계" };
+      };
+      const round = getRound();
+
       if (isFinishing) return (
         <div className="screen" style={{ justifyContent: 'center', alignItems: 'center' }}>
           <p className="text-body" style={{ opacity: 0.6 }}>결과를 분석하고 있습니다...</p>
@@ -648,7 +459,11 @@
 
       return (
         <div className="screen" style={{ display: 'flex', flexDirection: 'column' }}>
-          <div style={{ width: '100%', height: '6px', background: '#f0f0f0', marginBottom: '32px', marginTop: '16px', borderRadius: '3px', overflow: 'hidden' }}>
+          <div style={{ marginBottom: '24px', textAlign: 'center' }}>
+            <span style={{ fontSize: '12px', color: 'var(--color-accent)', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase' }}>{round.title}</span>
+            <div style={{ fontSize: '14px', color: '#666', marginTop: '4px' }}>{round.desc}</div>
+          </div>
+          <div style={{ width: '100%', height: '6px', background: '#f0f0f0', marginBottom: '32px', borderRadius: '3px', overflow: 'hidden' }}>
             <motion.div
               style={{ height: '100%', background: 'linear-gradient(90deg, var(--color-accent) 0%, #5a8fb8 100%)' }}
               initial={{ width: 0 }}
@@ -758,9 +573,7 @@
       const center = size / 2;
       const angleStep = (Math.PI * 2) / data.length;
 
-      const maxScore = Math.max(...data.map(d => d[1]));
-      // Prevent division by zero if maxScore is 0
-      const safeMaxScore = maxScore > 0 ? maxScore : 1;
+      const safeMaxScore = 100; // Fixed scale for percentage
       const scaleFactor = (radius - 60) / safeMaxScore;
 
       const points = data.map(([id, score], i) => {
@@ -790,7 +603,7 @@
                 key={scale}
                 points={outerPoints.map(([x, y]) => {
                   const dx = x - center; const dy = y - center;
-                  return `${center + dx * scale},${center + dy * scale}`;
+                  return `${center + dx * scale},${center + dy * scale} `;
                 }).join(' ')}
                 fill="none"
                 stroke="#eee"
@@ -806,6 +619,21 @@
             {/* Data Area */}
             <polygon points={points} fill="rgba(69, 123, 157, 0.2)" stroke="var(--color-accent)" strokeWidth="2" />
 
+            {/* Scale Labels (20%, 40%, 60%, 80%, 100%) */}
+            {[0.2, 0.4, 0.6, 0.8, 1].map(scale => (
+              <text
+                key={scale}
+                x={center}
+                y={center - (radius - 60) * scale}
+                textAnchor="middle"
+                fontSize="10"
+                fill="#ccc"
+                dominantBaseline="middle"
+              >
+                {Math.round(scale * 100)}%
+              </text>
+            ))}
+
             {/* Data Points */}
             {points.split(' ').map((p, i) => {
               const [x, y] = p.split(',');
@@ -820,18 +648,30 @@
               const y = center + r * Math.sin(angle);
               const arch = archetypes.find(a => a.id === id);
               return (
-                <text
-                  key={id}
-                  x={x}
-                  y={y}
-                  textAnchor="middle"
-                  dominantBaseline="middle"
-                  fill="#666"
-                  fontSize="11"
-                  fontWeight="600"
-                >
-                  {arch.name.split(' (')[0]}
-                </text>
+                <g key={id}>
+                  <text
+                    x={x}
+                    y={y - 8}
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    fill="#666"
+                    fontSize="11"
+                    fontWeight="600"
+                  >
+                    {arch.name.split(' (')[0]}
+                  </text>
+                  <text
+                    x={x}
+                    y={y + 6}
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    fill="var(--color-accent)"
+                    fontSize="10"
+                    fontWeight="700"
+                  >
+                    {score}%
+                  </text>
+                </g>
               );
             })}
           </svg>
@@ -839,7 +679,7 @@
       );
     };
 
-    const ResultCard = ({ archetype, label, subLabel, delay, highlight, isUnderUsed }) => {
+    const ResultCard = ({ archetype, label, subLabel, delay, highlight, isUnderUsed, score }) => {
       const [expanded, setExpanded] = useState(false);
       if (!archetype) return null;
       return (
@@ -852,11 +692,14 @@
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div>
-              <span className="text-small" style={{ textTransform: 'uppercase', color: highlight ? 'rgba(255,255,255,0.7)' : '#888' }}>{label}</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span className="text-small" style={{ textTransform: 'uppercase', color: highlight ? 'rgba(255,255,255,0.7)' : '#888' }}>{label}</span>
+                <span style={{ fontSize: '12px', fontWeight: 700, background: highlight ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.05)', padding: '2px 8px', borderRadius: '10px' }}>{score}%</span>
+              </div>
               <h3 className="text-h2" style={{ marginTop: '8px', fontSize: '24px' }}>{archetype.name.split(' (')[0]}</h3>
               <p style={{ opacity: 0.9, fontSize: '15px' }}>{archetype.oneLiner}</p>
             </div>
-            <div>{expanded ? '−' : '+'}</div>
+            <div style={{ fontSize: '24px' }}>{archetypeIcons[archetype.id]}</div>
           </div>
           <AnimatePresence>
             {expanded && (
@@ -908,12 +751,12 @@
           <p className="text-body" style={{ marginBottom: '40px' }}>이 결과는 고정된 성향이 아니라<br />지금 이 시점에서 자주 호출된 사고 방식입니다.</p>
 
           <h3 className="text-h2" style={{ marginTop: '0px', marginBottom: '16px' }}>주요 아키타입</h3>
-          <ResultCard archetype={primary} label="PRIMARY ARCHETYPE" subLabel="가장 먼저 호출되는 사고" delay={0.2} highlight />
+          <ResultCard archetype={primary} label="PRIMARY ARCHETYPE" subLabel="가장 먼저 호출되는 사고" delay={0.2} score={results.allScores.find(s => s[0] === results.primary)?.[1]} highlight />
           {/* Secondary Removed as per user request */}
           {/* <ResultCard archetype={secondary} label="Secondary Archetype" subLabel="보조적으로 활용하는 사고" delay={0.4} /> */}
 
           <h3 className="text-h2" style={{ marginTop: '40px', marginBottom: '16px' }}>그림자 아키타입</h3>
-          <ResultCard archetype={underUsed} label="Under-used Archetype" subLabel="다시 돌아봐야 할 질문" delay={0.6} isUnderUsed />
+          <ResultCard archetype={underUsed} label="Under-used Archetype" subLabel="다시 돌아봐야 할 질문" delay={0.6} score={results.allScores.find(s => s[0] === results.underUsed)?.[1]} isUnderUsed />
 
           <div style={{ marginTop: '50px' }}>
             <AnalysisSection
@@ -1013,14 +856,14 @@
               <span style={{ fontSize: '12px', color: '#999' }}>Gemini Pro 알고리즘 가동 중 (Vercel Secure Gate)</span>
             </p>
             <style>{`
-              .spinner {
-                width: 24px; height: 24px;
-                border: 3px solid #ddd; border-top-color: var(--color-accent);
-                borderRadius: 50%; margin: 0 auto;
-                animation: spin 1s linear infinite;
-              }
-              @keyframes spin { to { transform: rotate(360deg); } }
-            `}</style>
+      .spinner {
+      width: 24px; height: 24px;
+      border: 3px solid #ddd; border - top - color: var(--color - accent);
+      borderRadius: 50 %; margin: 0 auto;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    `}</style>
           </div>
         );
       }
@@ -1037,11 +880,11 @@
           <h3 className="text-h2" style={{ marginTop: '16px' }}>AI 종합 분석 결과</h3>
           <div className="analysis-content" style={{ fontSize: '15px', lineHeight: '1.7', marginTop: '16px' }} dangerouslySetInnerHTML={{ __html: analysis }}></div>
           <style>{`
-            .analysis-content h1, .analysis-content h2, .analysis-content h3 { margin-top: 20px; font-size: 18px; color: var(--color-accent); }
-            .analysis-content ul, .analysis-content ol { padding-left: 20px; margin: 12px 0; }
-            .analysis-content p { margin-bottom: 12px; }
-            .analysis-content strong { color: #111; }
-          `}</style>
+      .analysis - content h1, .analysis - content h2, .analysis - content h3 { margin - top: 20px; font - size: 18px; color: var(--color - accent); }
+            .analysis - content ul, .analysis - content ol { padding - left: 20px; margin: 12px 0; }
+            .analysis - content p { margin - bottom: 12px; }
+            .analysis - content strong { color: #111; }
+    `}</style>
         </motion.div>
       );
     };
@@ -1049,19 +892,6 @@
     const ExplorePage = () => {
       const history = useHistory();
       const [selectedId, setSelectedId] = useState(null);
-
-      const archetypeIcons = {
-        'Anthropologist': '🔍',
-        'Journalist': '📰',
-        'Detective': '🕵️',
-        'Systems Thinker': '🌐',
-        'Cartographer': '🗺️',
-        'Philosopher': '💭',
-        'Scientist': '🔬',
-        'Economist': '💰',
-        'Scenario Planner': '🎯',
-        'Judge': '⚖️'
-      };
 
       const renderList = () => (
         <div style={{ padding: '20px 0 40px 0', background: 'linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%)', minHeight: '100vh' }}>
@@ -1186,20 +1016,20 @@
     // --- LOGIC: Rule-based Interpretation Engine ---
     const generateInterpretation = (p, s, u) => {
       // 1. Core Identity
-      let text = `당신은 <strong>${p.name.split(' (')[0]}</strong>의 성향을 중심으로 세상을 바라봅니다. `;
+      let text = `당신은 < strong > ${p.name.split(' (')[0]}</strong > 의 성향을 중심으로 세상을 바라봅니다. `;
 
       // 2. Combination Logic (Primary + Secondary)
       const isAnalytic = ['Engineer', 'Scientist', 'Economist', 'Detective', 'Cartographer'].includes(p.id);
       const isEmpathic = ['Anthropologist', 'Journalist'].includes(p.id);
 
       if (p.id === s.id) {
-        text += `특히 한 가지 사고방식이 압도적으로 발달해 있어, 해당 분야의 전문가적 통찰을 보여주지만 때로는 시야가 좁아질 수 있음을 주의해야 합니다.<br/><br/>`;
+        text += `특히 한 가지 사고방식이 압도적으로 발달해 있어, 해당 분야의 전문가적 통찰을 보여주지만 때로는 시야가 좁아질 수 있음을 주의해야 합니다.< br /> <br />`;
       } else {
-        text += `동시에 <strong>${s.name.split(' (')[0]}</strong>의 기질을 보조 무기로 활용하여 균형을 잡고 있군요.<br/><br/>`;
+        text += `동시에 < strong > ${s.name.split(' (')[0]}</strong > 의 기질을 보조 무기로 활용하여 균형을 잡고 있군요.< br /> <br />`;
       }
 
       // 3. Synergy Sentence
-      text += `<strong>💡 강점의 결합</strong><br/>`;
+      text += `< strong >💡 강점의 결합</strong > <br />`;
       text += `당신은 ${p.coreQuestion}라고 묻는 본능적인 감각을 가지고 있으며, 이를 해결하는 과정에서 ${s.coreQuestion.replace('“', '').replace('”', '')}라는 질문을 더해 문제를 입체적으로 파악합니다. `;
 
       if (isAnalytic && ['Anthropologist', 'Journalist'].includes(s.id)) {
@@ -1209,12 +1039,12 @@
       } else {
         text += `이 두 가지 질문의 조합은 문제의 본질을 뚫고 지나가는 강력한 송곳과 같습니다. `;
       }
-      text += `<br/><br/>`;
+      text += `< br /> <br />`;
 
       // 4. Shadow/Blindspot Warning
-      text += `<strong>⚠️ 주의할 점 (Shadow)</strong><br/>`;
+      text += `< strong >⚠️ 주의할 점(Shadow)</strong > <br />`;
       text += `반면, <strong>${u.name.split(' (')[0]}</strong> 성향이 가장 낮게 나타났습니다. `;
-      text += `이는 당신이 문제 해결 과정에서 "${u.coreQuestion.replace('“', '').replace('”', '')}"라는 질문을 놓치기 쉽다는 것을 의미합니다.<br/>`;
+      text += `이는 당신이 문제 해결 과정에서 "${u.coreQuestion.replace('“', '').replace('”', '')}"라는 질문을 놓치기 쉽다는 것을 의미합니다.< br /> `;
 
       const shadowRisks = {
         'Anthropologist': '사용자의 실제 행동을 관찰하지 않고 책상 위에서만 고민하다가, 아무도 원하지 않는 해결책을 만들 위험이 있습니다.',
@@ -1232,8 +1062,8 @@
       text += `${shadowRisks[u.id] || ''}<br/><br/>`;
 
       // 5. Final Advice
-      text += `<strong>🚀 Action Plan</strong><br/>`;
-      text += `다음 회의에서는 의식적으로 <strong>"${u.coreQuestion.replace('“', '').replace('”', '')}"</strong>라는 질문을 먼저 던져보세요. 당신의 강력한 주 무기에 이 질문이 더해질 때, 비로소 완전한 문제정의가 완성될 것입니다.`;
+      text += `< strong >🚀 Action Plan</strong > <br />`;
+      text += `다음 회의에서는 의식적으로 < strong > "${u.coreQuestion.replace('“', '').replace('”', '')}"</strong > 라는 질문을 먼저 던져보세요.당신의 강력한 주 무기에 이 질문이 더해질 때, 비로소 완전한 문제정의가 완성될 것입니다.`;
 
       return text;
     };
