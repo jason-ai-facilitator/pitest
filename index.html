@@ -1080,7 +1080,10 @@
 
       const archetype = archetypes.find(a => a.id === userPrimaryId);
       const userPrimaryName = archetype ? archetype.name.split(' (')[0] : '관련';
-      const userPercent = stats.distribution[userPrimaryId] || 0;
+      const userPercent = stats.distribution[userPrimaryId] ||
+        stats.distribution[userPrimaryName] ||
+        stats.distribution[userPrimaryId.charAt(0).toUpperCase() + userPrimaryId.slice(1)] ||
+        0;
 
       return (
         <motion.div
