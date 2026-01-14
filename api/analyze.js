@@ -1,6 +1,6 @@
-const { GoogleGenerativeAI } = require("@google/generative-ai");
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
-module.exports = async (req, res) => {
+export default async function handler(req, res) {
     // Only allow POST requests
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method Not Allowed' });
@@ -10,7 +10,7 @@ module.exports = async (req, res) => {
     const apiKey = process.env.GEMINI_API_KEY;
 
     if (!apiKey) {
-        return res.status(500).json({ error: 'Gemini API key not configured on server' });
+        return res.status(500).json({ error: 'Gemini API key not configured on server (GEMINI_API_KEY missing)' });
     }
 
     try {
@@ -42,7 +42,7 @@ module.exports = async (req, res) => {
       <p>두 아키타입의 화학적 결합이 만드는 독보적인 강점과 타인과 차별화되는 지적 무기를 분석합니다.</p>
 
       <h2>2. 심층 데이터 분석 (Deep Behavioral Analysis)</h2>
-      <p>개별 문항의 답변 패턴에서 발견된 사용자의 핵심 가치관과 사고 프로세스의 특이점을 다룹니다.</p>
+      <p>개별 문항의 답변 패턴에서 발견된 사용자의 핵심 가치관과 사고 프로세스의 특이점을 다웁니다.</p>
 
       <h2>3. 구조적 맹점과 리스크 시나리오</h2>
       <p>${underUsedIds.join(', ')}의 결핍이 실제 팀 협업이나 복잡한 프로젝트에서 어떠한 치명적인 '의사결정 오류'를 부를 수 있는지 구체적인 가상 시나리오로 경고합니다.</p>
@@ -58,6 +58,6 @@ module.exports = async (req, res) => {
         res.status(200).json({ analysis: text });
     } catch (error) {
         console.error('Gemini API Error:', error);
-        res.status(500).json({ error: 'Failed to generate AI analysis' });
+        res.status(500).json({ error: `Failed to generate AI analysis: ${error.message}` });
     }
-};
+}
