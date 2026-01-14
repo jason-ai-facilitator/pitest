@@ -173,11 +173,8 @@
 
     // --- DATA ---
     const questions = [
+      // Anthropologist (4)
       { id: 1, text: "카페나 식당에 가면 사람들이 서비스를 이용할 때 어디서 멈칫거리는지 나도 모르게 관찰하곤 한다.", archetype: "Anthropologist" },
-      { id: 2, text: "회의 내용이 뒤섞여 있으면 \"잠시만요, 지금 무슨 이야기를 하는 중이죠?\"라고 범위를 좁히고 싶다.", archetype: "Cartographer" },
-      { id: 3, text: "누가 \"이게 대박이래요\"라고 하면, \"그게 통한다는 구체적인 근거가 있나요?\"라고 확인하고 싶어진다.", archetype: "Scientist" },
-      { id: 4, text: "다들 찬성하는 분위기일 때, 구석에서 표정이 안 좋은 사람에게 \"혹시 걱정되는 부분이 있으신가요?\"라고 묻고 싶다.", archetype: "Journalist" },
-      { id: 5, text: "새로운 일을 시작할 때, \"이걸 하느라 우리가 포기해야 하는 다른 중요한 일은 없을까?\"를 먼저 계산해본다.", archetype: "Economist" },
       { id: 6, text: "데이터 그래프를 보는 것보다, 그 제품을 쓰는 사람의 표정이나 손짓을 직접 한 번 보는 게 더 믿음직하다.", archetype: "Anthropologist" },
       { id: 7, text: "아이디어가 아무리 좋아도, 우리가 지금 해결할 수 있는 영역 밖의 일이면 과감히 제외해야 마음이 편하다.", archetype: "Cartographer" },
       { id: 8, text: "\"느낌이 좋다\"는 말보다는, 작게라도 직접 테스트해 본 결과가 있어야 다음 단계로 넘어갈 용기가 난다.", archetype: "Scientist" },
@@ -212,27 +209,7 @@
       { id: 37, text: "한 쪽을 누르면 다른 쪽이 튀어나오는 풍선 효과를 고려해서, 전체적인 균형을 맞추는 고민을 많이 한다.", archetype: "Systems Thinker" },
       { id: 38, text: "당장의 해결책보다 '우리가 문제를 바라보는 방식' 자체가 틀렸을지도 모른다는 의심을 한다.", archetype: "Philosopher" },
       { id: 39, text: "\"상황이 최악으로 흘러간다면 어떤 일이 벌어질까?\"를 시나리오로 그려보는 것이 불안을 줄이는 최고의 방법이라 생각한다.", archetype: "Scenario Planner" },
-      { id: 40, text: "사람들의 인터뷰 답변보다 그들이 무의식적으로 사용하는 말버릇이나 물건의 마모 상태를 더 신뢰한다.", archetype: "Anthropologist" },
-      { id: 41, text: "인터뷰 내용을 정리할 때 내 의견을 섞지 않고, 상대방이 쓴 독특한 표현이나 단어들을 그대로 살려 기록한다.", archetype: "Journalist" },
-      { id: 42, text: "중대한 결정을 내릴 때, \"내가 보고 싶은 것만 보고 있는 건 아닐까?\"라는 생각에 객관적인 데이터를 다시 확인한다.", archetype: "Scientist" },
-      { id: 43, text: "낭비되는 시간이나 인력이 없는지 수시로 살피며, 한정된 자원을 가장 효율적으로 배분하고 싶어 한다.", archetype: "Economist" },
-      { id: 44, text: "누군가의 불만을 들으면 \"이게 개인적인 감정인지, 아니면 공적으로 해결해야 할 정당한 문제인지\"를 먼저 심사한다.", archetype: "Judge" },
-      { id: 45, text: "문제가 터지면 사람을 비난하기보다, 그런 실수가 나올 수밖에 없었던 주변 환경과 구조를 먼저 탓한다.", archetype: "Systems Thinker" },
-      { id: 46, text: "상대방이 이야기하다 멈췄을 때, 서둘러 말을 얹기보다 가만히 눈을 맞추며 다음 이야기를 기다려주는 편이다.", archetype: "Journalist" },
-      { id: 47, text: "가설을 세울 때 \"우리가 틀렸다는 것을 가장 빠르게 확인할 방법은 뭘까?\"를 고민하며 실패의 가능성을 열어둔다.", archetype: "Scientist" },
-      { id: 48, text: "아무리 근사한 비전이라도, 결국 \"그래서 수익이 나는가?\" 혹은 \"지속 가능한가?\"라는 질문에 답하지 못하면 의미가 없다.", archetype: "Economist" },
-      { id: 49, text: "해야 할 일들이 산더미 같을 때, 지금 우리 팀이 가진 자원으로 해결할 수 있는 '단 하나의 핵심 문제'를 추려낸다.", archetype: "Judge" },
-      { id: 50, text: "특정 부분만 완벽하게 고치는 것보다, 전체 시스템의 흐름이 막히지 않게 조절하는 것이 훨씬 중요하다고 믿는다.", archetype: "Systems Thinker" },
-      { id: 51, text: "우리에게 유리한 정보만 수집하기보다는, 우리가 틀렸음을 말해주는 반대 의견을 일부러 찾아다닌다.", archetype: "Journalist" },
-      { id: 52, text: "\"제 느낌에는요\"라는 말로 설득하려는 사람을 보면 일단 정보의 신뢰도가 떨어진다고 판단한다.", archetype: "Scientist" },
-      { id: 53, text: "아이디어가 아무리 좋아도 실행 과정에서 누군가가 일방적으로 희생한다면 좋은 해결책이 아니라고 본다.", archetype: "Economist" },
-      { id: 54, text: "문제 정의가 논리적으로 설득력이 없으면, 아무리 반짝이는 해결책이라도 \"아직 해결할 준비가 안 됐다\"고 선을 긋는다.", archetype: "Judge" },
-      { id: 55, text: "복잡하게 얽힌 실타래에서 어디를 건드려야 전체가 풀릴지 그 '급소'를 찾는 과정에 몰입한다.", archetype: "Systems Thinker" },
-      { id: 56, text: "사람들의 말 뒤에 숨겨진 '진짜 마음'이나 '간절함'이 무엇인지 파악하려고 깊이 몰입한다.", archetype: "Journalist" },
-      { id: 57, text: "결론이 나기 전에 \"그걸 어떻게 확인할 수 있죠? 실제 테스트해봤나요?\"라고 따져 묻는 편이다.", archetype: "Scientist" },
-      { id: 58, text: "비효율이 발생하는 상황을 방치하기보다 현실적인 대안을 찾아 자원을 아끼고 싶다.", archetype: "Economist" },
-      { id: 59, text: "\"다 중요해 보여요\"라는 팀원들에게 가장 중요한 단 하나를 고르라고 독려하는 편이다.", archetype: "Judge" },
-      { id: 60, text: "악순환의 고리를 끊어내기 위해 어디에 힘을 집중해야 할지 구조적으로 접근한다.", archetype: "Systems Thinker" }
+      { id: 40, text: "사람들의 인터뷰 답변보다 그들이 무의식적으로 사용하는 말버릇이나 물건의 마모 상태를 더 신뢰한다.", archetype: "Anthropologist" }
     ];
 
     const archetypes = [
@@ -306,7 +283,7 @@
           <p><strong>분석 마비</strong>: 완벽한 인과 관계를 증명하려다 보면 결론을 내리는 데 너무 많은 시간을 소요할 수 있습니다.</p>
 
           <h3>4. 존재의 가치: 당신이 없으면 팀이 겪게 될 비극</h3>
-          <p>탐정이 없는 팀은 <strong>‘두더지 잡기 게임’</strong>을 반복하게 됩니다. 문제를 해결했다고 생각하는 순간, 똑같은 문제가 다른 모습으로 다시 나타납니다. 근본 원인을 제거하지 않았기 때문입니다.</p>
+          <p>탐정이 없는 팀은 <strong>‘두더지 잡기 게임’</strong>을 반복하게 됩니다. 근본 원인을 제거하지 않았기 때문입니다.</p>
         `,
         blindSpot: '완벽한 인과 증명에 집착하여 실행 타이밍을 놓침'
       },
@@ -328,6 +305,9 @@
 
           <h3>4. 존재의 가치: 당신이 없으면 팀이 겪게 될 비극</h3>
           <p>시스템 사고가가 없는 팀은 <strong>‘악순환의 굴레’</strong>에 갇힙니다. 문제를 해결하기 위해 내놓은 대책이 시간이 지나 더 큰 문제를 야기하는 '코브라 효과'를 경험하게 됩니다.</p>
+
+          <h3>5. 당신을 위한 제언: 복잡함을 명료함으로 바꾸는 법</h3>
+          <p><strong>인과순환지도(CLD)의 간소화</strong>: 가장 핵심적인 3~4개의 루프만 시각화하여 공유해도 팀은 충분히 큰 영감을 얻을 수 있습니다.</p>
         `,
         blindSpot: '과도한 복잡성으로 인해 실행 아이디어가 나오지 않음'
       },
@@ -373,7 +353,7 @@
            <h3>4. 존재의 가치: 당신이 없으면 팀이 겪게 될 비극</h3>
            <p>철학자가 없는 팀은 <strong>‘훌륭하게 정의된 오답’</strong>을 풉니다. 기술적으로 완벽하고 논리적으로 치밀하지만, 정작 세상에 내놓았을 때 "이게 왜 필요하지?"라는 본질적인 회의론에 부딪히게 됩니다.</p>
         `,
-        blindSpot: '사유가 행동으로 이어지지 않고 공허한 말잔치에 머물 위험'
+        blindSpot: '사유가 행동으로 이어지지 않고 공허한 말잔치에 머무를 위험'
       },
       {
         id: 'Scientist',
@@ -435,13 +415,16 @@
 
           <h3>4. 존재의 가치: 당신이 없으면 팀이 겪게 될 비극</h3>
           <p>시나리오 플래너가 없는 팀은 <strong>‘단기 승리 후 장기 패배’</strong>의 늪에 빠집니다. 오늘의 해결책이 내일의 괴물이 되어 돌아옵니다.</p>
+
+          <h3>5. 당신을 위한 제언: 예측을 대비로 바꾸는 법</h3>
+          <p><strong>‘만약에(What-if)’ 질문 던지기</strong>: 회의 중간에 질문을 던지세요. 이 질문 하나가 팀의 회복탄력성을 키우는 훌륭한 예방주사가 됩니다.</p>
         `,
         blindSpot: '부정적 시나리오에 몰입해 도전을 주저함'
       },
       {
         id: 'Judge',
         name: '판사 (The Judge)',
-        oneLiner: '문제의 본질적 가치와 개입의 정당성을 선언하는 최후의 보루',
+        oneLiner: '판사 (The Judge)',
         coreQuestion: '“이것은 우리가 개입해야 할 문제인가?”',
         desc: '이 문제가 공적인 가치가 있는지, 우리가 해결할 자격과 책임이 있는지 냉정하게 판결합니다.',
         fullContent: `
@@ -449,7 +432,7 @@
           <p>판사의 가장 강력한 무기는 <strong>‘분별력과 결단력’</strong>입니다. 단순한 불편함(Complaint)과 진짜 문제(Problem)를 엄격히 구분합니다.</p>
 
           <h3>2. 팀 내의 역할: 불필요한 질주를 멈추는 ‘최종 게이트키퍼’</h3>
-          <p><strong>우선순위의 최종 확정</strong>: "우리가 이번에 집중할 문제는 이것이다"라고 선언하여 팀에게 확신을 줍니다.</p>
+          <p><strong>우선순위의 최종 확정</strong>: "우리가 이번에 집중할 문제는 이것이다"라고 선언하여 팀원들에게 확신을 줍니다.</p>
 
           <h3>3. 지적 그림자: 독단적 판결과 공감의 결여</h3>
           <p><strong>권위주의적 태도</strong>: "그건 문제가 아니다"라는 단정적인 태도는 팀원들의 자발적인 발견 의지를 꺾을 수 있습니다.</p>
@@ -462,15 +445,37 @@
     ];
 
     const calculateResults = (answers) => {
-      const scores = {};
-      questions.forEach(q => {
-        if (!scores[q.archetype]) scores[q.archetype] = 0;
+      const archetypeCounts = {};
+      const archetypeSums = {};
+
+      archetypes.forEach(a => {
+        archetypeCounts[a.id] = 0;
+        archetypeSums[a.id] = 0;
       });
+
+      questions.forEach(q => {
+        if (archetypeCounts.hasOwnProperty(q.archetype)) {
+          archetypeCounts[q.archetype]++;
+        }
+      });
+
       Object.entries(answers).forEach(([qId, value]) => {
         const q = questions.find(q => q.id === Number(qId));
-        if (q) scores[q.archetype] += value;
+        if (q && archetypeSums.hasOwnProperty(q.archetype)) {
+          archetypeSums[q.archetype] += value;
+        }
       });
-      const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+
+      const percentages = {};
+      archetypes.forEach(a => {
+        const count = archetypeCounts[a.id] || 1;
+        const maxPossible = count * 5;
+        const sum = archetypeSums[a.id] || 0;
+        percentages[a.id] = Math.round((sum / maxPossible) * 100);
+      });
+
+      const sorted = Object.entries(percentages).sort((a, b) => b[1] - a[1]);
+
       return {
         primary: sorted[0] ? sorted[0][0] : null,
         secondary: sorted[1] ? sorted[1][0] : null,
