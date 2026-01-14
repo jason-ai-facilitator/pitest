@@ -946,7 +946,16 @@
             })
           });
 
-          if (!response.ok) throw new Error('API request failed');
+          if (!response.ok) {
+            let errorMsg = `HTTP Error ${response.status}`;
+            try {
+              const errData = await response.json();
+              if (errData.error) errorMsg = errData.error;
+            } catch (e) {
+              errorMsg = `${response.status} ${response.statusText}`;
+            }
+            throw new Error(errorMsg);
+          }
 
           const data = await response.json();
           if (data.error) throw new Error(data.error);
