@@ -30,8 +30,24 @@ export default async function handler(req, res) {
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
+    // Map archetype names to lowercase IDs
+    const nameToId = {
+        'Detective': 'detective',
+        'Judge': 'judge',
+        'Cartographer': 'cartographer',
+        'Anthropologist': 'anthropologist',
+        'Archaeologist': 'archaeologist',
+        'Journalist': 'journalist',
+        'Architect': 'architect',
+        'Ethnographer': 'ethnographer',
+        'Futurist': 'futurist',
+        'Philosopher': 'philosopher',
+        'Systems Thinker': 'systems-thinker'
+    };
+
     // Find the primary archetype ID (the one with the highest score)
-    const primaryId = scores.sort((a, b) => b[1] - a[1])[0][0];
+    const primaryName = scores.sort((a, b) => b[1] - a[1])[0][0];
+    const primaryId = nameToId[primaryName] || primaryName.toLowerCase().replace(/\s+/g, '-');
 
     try {
         const { data, error } = await supabase
