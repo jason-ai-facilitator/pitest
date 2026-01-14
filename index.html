@@ -1081,14 +1081,22 @@
       const archetype = archetypes.find(a => a.id === userPrimaryId);
       const userPrimaryName = archetype ? archetype.name.split(' (')[0] : '관련';
 
-      // Safe fallback for distribution lookup
+      // Safe fallback for distribution lookup with case-insensitive matching
       let userPercent = 0;
       if (stats.distribution) {
-        userPercent = stats.distribution[userPrimaryId] ||
-          stats.distribution[userPrimaryName] ||
-          (userPrimaryId && stats.distribution[userPrimaryId.charAt(0).toUpperCase() + userPrimaryId.slice(1)]) ||
-          0;
+        // Try exact match first
+        userPercent = stats.distribution[userPrimaryId];
+
+        // If not found, try case-insensitive search
+        if (!userPercent) {
+          const normalizedId = userPrimaryId.toLowerCase().replace(/\s+/g, '-');
+          const matchingKey = Object.keys(stats.distribution).find(key =>
+            key.toLowerCase().replace(/\s+/g, '-') === normalizedId
+          );
+          userPercent = matchingKey ? stats.distribution[matchingKey] : 0;
+        }
       }
+
 
       return (
         <motion.div
