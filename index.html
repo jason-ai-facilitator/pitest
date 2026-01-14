@@ -818,9 +818,9 @@
         score: results.allScores.find(s => s[0] === id)[1]
       }));
 
-      const primary = archetypes.find(a => a.id === results.allScores[0][0]);
-      const secondary = archetypes.find(a => a.id === results.allScores[1][0]);
-      const underUsed = archetypes.find(a => a.id === results.allScores[results.allScores.length - 1][0]);
+      const primary = archetypes.find(a => a.id === (results.allScores[0] ? results.allScores[0][0] : '')) || archetypes[0];
+      const secondary = archetypes.find(a => a.id === (results.allScores[1] ? results.allScores[1][0] : '')) || archetypes[1];
+      const underUsed = archetypes.find(a => a.id === (results.allScores[results.allScores.length - 1] ? results.allScores[results.allScores.length - 1][0] : '')) || archetypes[archetypes.length - 1];
 
       return (
         <div className="screen">
@@ -929,8 +929,13 @@
           if (!response.ok) throw new Error('API request failed');
 
           const data = await response.json();
+
+          // Clean the response: remove markdown code fences if present (e.g. ```html ... ```)
+          let cleanText = data.analysis || "";
+          cleanText = cleanText.replace(/```html/gi, "").replace(/```/g, "").trim();
+
           // Use marked.js if available, else fallback to raw text
-          const htmlContent = window.marked ? window.marked.parse(data.analysis) : data.analysis;
+          const htmlContent = window.marked ? window.marked.parse(cleanText) : cleanText;
           setAnalysis(htmlContent);
           setStatus('done');
         } catch (error) {

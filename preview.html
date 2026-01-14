@@ -989,9 +989,9 @@
         score: results.allScores.find(s => s[0] === id)[1]
       }));
 
-      const primary = archetypes.find(a => a.id === results.allScores[0][0]);
-      const secondary = archetypes.find(a => a.id === results.allScores[1][0]);
-      const underUsed = archetypes.find(a => a.id === results.allScores[results.allScores.length - 1][0]);
+      const primary = archetypes.find(a => a.id === (results.allScores[0] ? results.allScores[0][0] : '')) || archetypes[0];
+      const secondary = archetypes.find(a => a.id === (results.allScores[1] ? results.allScores[1][0] : '')) || archetypes[1];
+      const underUsed = archetypes.find(a => a.id === (results.allScores[results.allScores.length - 1] ? results.allScores[results.allScores.length - 1][0] : '')) || archetypes[archetypes.length - 1];
 
       return (
         <div className="screen">
