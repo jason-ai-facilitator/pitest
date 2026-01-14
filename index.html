@@ -215,20 +215,17 @@
       const archetypeCounts = {};
       const archetypeSums = {};
 
-      // Initialize counts and sums for all archetypes
       archetypes.forEach(a => {
         archetypeCounts[a.id] = 0;
         archetypeSums[a.id] = 0;
       });
 
-      // Count how many questions belong to each archetype
       questions.forEach(q => {
         if (archetypeCounts.hasOwnProperty(q.archetype)) {
           archetypeCounts[q.archetype]++;
         }
       });
 
-      // Sum the user's answers
       Object.entries(answers).forEach(([qId, value]) => {
         const q = questions.find(q => q.id === Number(qId));
         if (q && archetypeSums.hasOwnProperty(q.archetype)) {
@@ -236,7 +233,6 @@
         }
       });
 
-      // Calculate percentage: (Sum / (Count * 5)) * 100
       const scores = {};
       Object.keys(archetypeSums).forEach(id => {
         const count = archetypeCounts[id];
@@ -248,10 +244,13 @@
       });
 
       const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+
+      const activeArchetypes = sorted.filter(s => s[1] >= 80).map(s => s[0]);
+      const inactiveArchetypes = sorted.filter(s => s[1] <= 40).map(s => s[0]);
+
       return {
-        primary: sorted[0] ? sorted[0][0] : null,
-        secondary: sorted[1] ? sorted[1][0] : null,
-        underUsed: sorted[sorted.length - 1] ? sorted[sorted.length - 1][0] : null,
+        activeArchetypes,
+        inactiveArchetypes,
         allScores: sorted
       };
     };
@@ -259,13 +258,24 @@
     // --- COMPONENTS ---
     const LandingPage = () => {
       const history = useHistory();
+      const [name, setName] = useState(localStorage.getItem('archetype_user_name') || '');
+
+      const handleStart = () => {
+        if (!name.trim()) {
+          alert('이름을 입력해주세요.');
+          return;
+        }
+        localStorage.setItem('archetype_user_name', name.trim());
+        history.push('/intro');
+      };
+
       return (
         <div className="screen" style={{ justifyContent: 'center', background: 'linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%)' }}>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            style={{ textAlign: 'center' }}
+            style={{ textAlign: 'center', width: '100%', maxWidth: '400px', margin: '0 auto' }}
           >
             <motion.div
               initial={{ scale: 0.9 }}
@@ -292,38 +302,53 @@
               결과를 바꿉니다.
             </h1>
 
-            <div style={{ marginBottom: '40px', background: 'rgba(255,255,255,0.8)', padding: '24px', borderRadius: '12px', backdropFilter: 'blur(10px)' }}>
-              <p className="text-body" style={{ marginBottom: '16px', fontSize: '16px' }}>
+            <div style={{ marginBottom: '32px', background: 'rgba(255,255,255,0.8)', padding: '24px', borderRadius: '12px', backdropFilter: 'blur(10px)' }}>
+              <div style={{ marginBottom: '20px' }}>
+                <label style={{ display: 'block', fontSize: '14px', color: '#666', marginBottom: '8px', textAlign: 'left' }}>성함을 알려주세요</label>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="예: 홍길동"
+                  style={{
+                    width: '100%',
+                    padding: '16px',
+                    borderRadius: '8px',
+                    border: '1px solid #ddd',
+                    fontSize: '16px',
+                    outline: 'none',
+                    textAlign: 'center'
+                  }}
+                />
+              </div>
+              <p className="text-body" style={{ marginBottom: '16px', fontSize: '15px' }}>
                 이 테스트는 당신이 문제에 직면했을 때<br />
                 <strong style={{ color: 'var(--color-accent)' }}>가장 먼저 꺼내 드는 사고 도구</strong>를 진단합니다.
               </p>
-              <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap', marginTop: '20px' }}>
-                <span style={{ padding: '6px 16px', background: '#f0f4f8', borderRadius: '20px', fontSize: '13px', color: '#555' }}>⏱️ 소요시간 5분 내외</span>
-                <span style={{ padding: '6px 16px', background: '#f0f4f8', borderRadius: '20px', fontSize: '13px', color: '#555' }}>📊 {questions.length}개 문항</span>
-                <span style={{ padding: '6px 16px', background: '#f0f4f8', borderRadius: '20px', fontSize: '13px', color: '#555' }}>🎯 10가지 유형</span>
+              <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                <span style={{ padding: '4px 12px', background: '#f0f4f8', borderRadius: '20px', fontSize: '12px', color: '#555' }}>⏱️ 5분 소요</span>
+                <span style={{ padding: '4px 12px', background: '#f0f4f8', borderRadius: '20px', fontSize: '12px', color: '#555' }}>📊 {questions.length}문항</span>
               </div>
             </div>
 
             <button
-              onClick={() => history.push('/intro')}
+              onClick={handleStart}
+              disabled={!name.trim()}
               style={{
                 width: '100%',
                 padding: '20px',
-                background: 'linear-gradient(135deg, var(--color-accent) 0%, #5a8fb8 100%)',
+                background: name.trim() ? 'linear-gradient(135deg, var(--color-accent) 0%, #5a8fb8 100%)' : '#ccc',
                 color: '#fff',
                 borderRadius: '12px',
                 fontSize: '17px',
                 fontWeight: 600,
-                letterSpacing: '-0.01em',
-                transition: 'transform 0.2s, box-shadow 0.2s',
-                boxShadow: '0 4px 15px rgba(69, 123, 157, 0.3)',
+                boxShadow: name.trim() ? '0 4px 15px rgba(69, 123, 157, 0.3)' : 'none',
                 border: 'none',
-                cursor: 'pointer'
+                cursor: name.trim() ? 'pointer' : 'default',
+                transition: 'all 0.2s'
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(69, 123, 157, 0.4)'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 4px 15px rgba(69, 123, 157, 0.3)'; }}
             >
-              🚀 테스트 시작하기
+              🚀 시작하기
             </button>
           </motion.div>
         </div>
@@ -451,13 +476,31 @@
         }, 300);
       };
 
-      const finishTest = (finalAnswers) => {
+      const finishTest = async (finalAnswers) => {
         setIsFinishing(true);
+        const name = localStorage.getItem('archetype_user_name');
+        const results = calculateResults(finalAnswers);
+
+        try {
+          await fetch('/api/save-result', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              name,
+              answers: finalAnswers,
+              scores: results.allScores,
+              timestamp: new Date().toISOString()
+            })
+          });
+        } catch (e) {
+          console.error("Failed to save results", e);
+        }
+
         setTimeout(() => {
           localStorage.setItem('archetype_answers', JSON.stringify(finalAnswers));
-          localStorage.removeItem('archetype_progress'); // Clear progress after completion
+          localStorage.removeItem('archetype_progress');
           history.push('/result');
-        }, 2000);
+        }, 1500);
       };
 
       const getRound = () => {
@@ -743,6 +786,8 @@
     const ResultPage = () => {
       const history = useHistory();
       const [results, setResults] = useState(null);
+      const userName = localStorage.getItem('archetype_user_name') || '방문자';
+
       useEffect(() => {
         const saved = localStorage.getItem('archetype_answers');
         if (saved) {
@@ -757,22 +802,52 @@
         </div>
       );
 
-      const primary = archetypes.find(a => a.id === results.primary);
-      const secondary = archetypes.find(a => a.id === results.secondary);
-      const underUsed = archetypes.find(a => a.id === results.underUsed);
+      const activeList = results.activeArchetypes.map(id => ({
+        ...archetypes.find(a => a.id === id),
+        score: results.allScores.find(s => s[0] === id)[1]
+      }));
+
+      const inactiveList = results.inactiveArchetypes.map(id => ({
+        ...archetypes.find(a => a.id === id),
+        score: results.allScores.find(s => s[0] === id)[1]
+      }));
+
+      const primary = archetypes.find(a => a.id === results.allScores[0][0]);
+      const secondary = archetypes.find(a => a.id === results.allScores[1][0]);
+      const underUsed = archetypes.find(a => a.id === results.allScores[results.allScores.length - 1][0]);
 
       return (
         <div className="screen">
-          <h2 className="text-h1">진단 결과</h2>
-          <p className="text-body" style={{ marginBottom: '40px' }}>이 결과는 고정된 성향이 아니라<br />지금 이 시점에서 자주 호출된 사고 방식입니다.</p>
+          <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+            <h2 className="text-h1" style={{ marginBottom: '8px' }}>{userName}님의 진단 결과</h2>
+            <p className="text-body">이 결과는 고정된 성향이 아니라<br />지금 이 시점에서 자주 활용된 사고 방식입니다.</p>
+          </div>
 
-          <h3 className="text-h2" style={{ marginTop: '0px', marginBottom: '16px' }}>주요 아키타입</h3>
-          <ResultCard archetype={primary} label="PRIMARY ARCHETYPE" subLabel="가장 먼저 호출되는 사고" delay={0.2} score={results.allScores.find(s => s[0] === results.primary)?.[1]} highlight />
-          {/* Secondary Removed as per user request */}
-          {/* <ResultCard archetype={secondary} label="Secondary Archetype" subLabel="보조적으로 활용하는 사고" delay={0.4} /> */}
+          <section style={{ marginBottom: '48px' }}>
+            <h3 className="text-h2" style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              🔥 활성 아키타입 <span style={{ fontSize: '14px', fontWeight: 500, color: '#666' }}>({activeList.length})</span>
+            </h3>
+            {activeList.length > 0 ? (
+              activeList.map((a, i) => (
+                <ResultCard key={a.id} archetype={a} label="ACTIVE" score={a.score} delay={i * 0.1} highlight />
+              ))
+            ) : (
+              <p style={{ color: '#999', fontSize: '14px', padding: '20px', textAlign: 'center', border: '1px dashed #ddd', borderRadius: '8px' }}>강력하게 활성화된 유형이 없습니다.</p>
+            )}
+          </section>
 
-          <h3 className="text-h2" style={{ marginTop: '40px', marginBottom: '16px' }}>그림자 아키타입</h3>
-          <ResultCard archetype={underUsed} label="Under-used Archetype" subLabel="다시 돌아봐야 할 질문" delay={0.6} score={results.allScores.find(s => s[0] === results.underUsed)?.[1]} isUnderUsed />
+          <section style={{ marginBottom: '48px' }}>
+            <h3 className="text-h2" style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              ❄️ 비활성 아키타입 <span style={{ fontSize: '14px', fontWeight: 500, color: '#666' }}>({inactiveList.length})</span>
+            </h3>
+            {inactiveList.length > 0 ? (
+              inactiveList.map((a, i) => (
+                <ResultCard key={a.id} archetype={a} label="INACTIVE" score={a.score} delay={0.3 + i * 0.1} isUnderUsed />
+              ))
+            ) : (
+              <p style={{ color: '#999', fontSize: '14px', padding: '20px', textAlign: 'center', border: '1px dashed #ddd', borderRadius: '8px' }}>모든 유형이 어느 정도 활용되고 있습니다.</p>
+            )}
+          </section>
 
           <div style={{ marginTop: '50px' }}>
             <AnalysisSection
@@ -788,13 +863,25 @@
             <h3 className="text-h2">전체 사고 분포</h3>
             <RadarChart data={results.allScores} />
 
-            <div style={{ marginTop: '40px', textAlign: 'center' }}>
+            <div style={{ marginTop: '40px', textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '12px' }}>
               <button
                 onClick={() => history.push('/explore')}
                 className="btn-secondary"
-                style={{ display: 'inline-block', width: 'auto', padding: '12px 24px', cursor: 'pointer' }}
+                style={{ width: '100%', padding: '16px' }}
               >
                 다른 아키타입 전체 보기
+              </button>
+              <button
+                onClick={() => {
+                  if (confirm('모든 진단 데이터가 초기화됩니다. 다시 시작할까요?')) {
+                    localStorage.clear();
+                    window.location.hash = '#/';
+                    window.location.reload();
+                  }
+                }}
+                style={{ background: 'none', border: 'none', color: '#999', fontSize: '13px', cursor: 'pointer', textDecoration: 'underline' }}
+              >
+                처음부터 다시 진단하기
               </button>
             </div>
           </div>
