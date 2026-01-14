@@ -1050,7 +1050,7 @@
           style={{ background: '#fff', border: '1px solid #111', padding: '24px', borderRadius: '8px', position: 'relative', boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}
         >
           <div style={{ position: 'absolute', top: -12, left: 24, background: '#111', color: '#fff', padding: '4px 12px', fontSize: '10px', fontWeight: 700, borderRadius: '12px' }}>
-            결과 종합분석 (v1.2.0-AI-RESTORED)
+            결과 종합분석 (v1.3.0-OBJECTIVE)
           </div>
           <h3 className="text-h2" style={{ marginTop: '16px' }}>결과 종합분석</h3>
           <div className="analysis-content" style={{ fontSize: '15px', lineHeight: '1.7', marginTop: '16px' }} dangerouslySetInnerHTML={{ __html: analysis }}></div>
@@ -1065,7 +1065,18 @@
     };
 
     const StatisticsSection = ({ stats, userPrimaryId }) => {
-      if (!stats || !stats.distribution) return null; // Safety check
+      if (!stats) return null;
+
+      // Handle empty database case
+      if (stats.totalParticipants === 0) {
+        return (
+          <div style={{ background: '#f8f9fa', padding: '32px', borderRadius: '16px', border: '1px solid #e9ecef', textAlign: 'center' }}>
+            <span style={{ fontSize: '24px', display: 'block', marginBottom: '12px' }}>📊</span>
+            <h3 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '8px' }}>첫 번째 주인공이 되어주세요!</h3>
+            <p style={{ fontSize: '14px', color: '#666' }}>아직 수집된 통계 데이터가 없습니다.<br />주변에 진단을 공유하여 커뮤니티 성향 데이터를 함께 만들어보세요.</p>
+          </div>
+        );
+      }
 
       const archetype = archetypes.find(a => a.id === userPrimaryId);
       const userPrimaryName = archetype ? archetype.name.split(' (')[0] : '관련';
