@@ -20,12 +20,10 @@ export default async function handler(req, res) {
 
     if (!supabaseUrl || !supabaseServiceKey) {
         console.warn('Supabase credentials missing. Falling back to log-only mode.');
-        console.log('--- NEW DIAGNOSTIC RESULT (LOG ONLY) ---');
-        console.log(`User: ${name}`);
-        console.log(`Scores: ${JSON.stringify(scores)}`);
         return res.status(200).json({
             success: true,
-            message: 'Result logged (Supabase not configured)',
+            warning: 'Supabase not configured (SUPABASE_URL or KEY missing)',
+            message: 'Result logged to server console only',
             data: { name, timestamp }
         });
     }
@@ -56,6 +54,6 @@ export default async function handler(req, res) {
         });
     } catch (error) {
         console.error('Error saving to Supabase:', error);
-        return res.status(500).json({ message: 'Internal Server Error', error: error.message });
+        return res.status(500).json({ error: `Database Save Failed: ${error.message}` });
     }
 }
