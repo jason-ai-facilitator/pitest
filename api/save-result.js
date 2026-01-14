@@ -1,7 +1,7 @@
+import { createClient } from '@supabase/supabase-js';
+
 /**
- * Vercel Serverless Function: Save Diagnostic Results
- * Currently logs the data and returns a success response.
- * Can be extended to save to Google Sheets, Supabase, or any other DB.
+ * Vercel Serverless Function: Save Diagnostic Results to Supabase
  */
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
@@ -14,22 +14,48 @@ export default async function handler(req, res) {
         return res.status(400).json({ message: 'Missing required data' });
     }
 
-    // LOG FOR VIEWING IN VERCEL LOGS
-    console.log('--- NEW DIAGNOSTIC RESULT ---');
-    console.log(`User: ${name}`);
-    console.log(`Time: ${timestamp}`);
-    console.log(`Scores: ${JSON.stringify(scores)}`);
-    console.log('----------------------------');
+    // Initialize Supabase (Ensure these are set in Vercel Environment Variables)
+    const supabaseUrl = process.env.SUPABASE_URL;
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-    /**
-     * FUTURE INTEGRATION:
-     * To save to Google Sheets, you can use a library like 'google-spreadsheet'
-     * or send a webhook to services like Make.com/Zapier.
-     */
+    if (!supabaseUrl || !supabaseServiceKey) {
+        console.warn('Supabase credentials missing. Falling back to log-only mode.');
+        console.log('--- NEW DIAGNOSTIC RESULT (LOG ONLY) ---');
+        console.log(`User: ${name}`);
+        console.log(`Scores: ${JSON.stringify(scores)}`);
+        return res.status(200).json({
+            success: true,
+            message: 'Result logged (Supabase not configured)',
+            data: { name, timestamp }
+        });
+    }
 
-    return res.status(200).json({
-        success: true,
-        message: 'Result saved successfully',
-        data: { name, timestamp }
-    });
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+    // Find the primary archetype ID (the one with the highest score)
+    const primaryId = scores.sort((a, b) => b[1] - a[1])[0][0];
+
+    try {
+        const { data, error } = await supabase
+            .from('results')
+            .insert([
+                {
+                    name,
+                    primary_id: primaryId,
+                    scores: scores,
+                    created_at: timestamp || new Date().toISOString()
+                }
+            ]);
+
+        if (error) throw error;
+
+        return res.status(200).json({
+            success: true,
+            message: 'Result saved to Supabase',
+            data: data
+        });
+    } catch (error) {
+        console.error('Error saving to Supabase:', error);
+        return res.status(500).json({ message: 'Internal Server Error', error: error.message });
+    }
 }
