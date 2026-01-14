@@ -1025,10 +1025,10 @@
           style={{ background: '#fff', border: '1px solid #111', padding: '24px', borderRadius: '8px', position: 'relative', boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}
         >
           <div style={{ position: 'absolute', top: -12, left: 24, background: '#111', color: '#fff', padding: '4px 12px', fontSize: '12px', fontWeight: 700, borderRadius: '12px' }}>
-            AI REPORT
+            결과 종합분석 (STATIC)
           </div>
-          <h3 className="text-h2" style={{ marginTop: '16px' }}>당신의 문제 해결 DNA</h3>
-          <p className="text-body" style={{ whiteSpace: 'pre-line', marginTop: '16px' }} dangerouslySetInnerHTML={{ __html: analysis }}></p>
+          <h3 className="text-h2" style={{ marginTop: '16px' }}>결과 종합분석</h3>
+          <div className="analysis-content" style={{ fontSize: '15px', lineHeight: '1.7', whiteSpace: 'pre-line', marginTop: '16px' }} dangerouslySetInnerHTML={{ __html: analysis }}></div>
         </motion.div>
       );
     };
