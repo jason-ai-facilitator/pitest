@@ -787,6 +787,7 @@
       const history = useHistory();
       const [results, setResults] = useState(null);
       const [stats, setStats] = useState(null);
+      const [statsError, setStatsError] = useState(null);
       const userName = localStorage.getItem('archetype_user_name') || '방문자';
 
       useEffect(() => {
@@ -796,9 +797,18 @@
         }
 
         fetch('/api/get-stats')
-          .then(res => res.json())
-          .then(data => setStats(data))
-          .catch(err => console.error("Failed to fetch stats", err));
+          .then(res => {
+            if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+            return res.json();
+          })
+          .then(data => {
+            if (data.error) throw new Error(data.error);
+            setStats(data);
+          })
+          .catch(err => {
+            console.error("Failed to fetch stats", err);
+            setStatsError(err.message);
+          });
       }, []);
 
       if (!results) return (
@@ -865,9 +875,18 @@
             />
           </div>
 
-          {stats && (
+          {stats ? (
             <div style={{ marginTop: '60px' }}>
               <StatisticsSection stats={stats} userPrimaryId={primary.id} />
+            </div>
+          ) : statsError ? (
+            <div style={{ marginTop: '60px', padding: '20px', background: '#fff3f3', border: '1px solid #ffc1c1', borderRadius: '12px', color: '#d63031', fontSize: '13px' }}>
+              <strong>📊 통계 데이터를 불러올 수 없습니다:</strong> ${statsError}<br />
+              (Vercel의 SUPABASE 환경 변수 및 DB 테이블 설정을 확인해주세요.)
+            </div>
+          ) : (
+            <div style={{ marginTop: '60px', textAlign: 'center', opacity: 0.5 }}>
+              <p className="text-small">통계 데이터를 불러오는 중...</p>
             </div>
           )}
 
@@ -929,6 +948,7 @@
           if (!response.ok) throw new Error('API request failed');
 
           const data = await response.json();
+          if (data.error) throw new Error(data.error);
 
           // Clean the response: remove markdown code fences if present (e.g. ```html ... ```)
           let cleanText = data.analysis || "";
@@ -942,7 +962,13 @@
           console.error('AI Analysis Error:', error);
           // Fallback to rule-based analysis if AI fails
           const fallback = generateInterpretation(primary, secondary, underUsed);
-          setAnalysis(fallback);
+          setAnalysis(`
+            <div style="background:#fff3f3; padding:12px; border-radius:4px; border:1px solid #ffc1c1; color:#d63031; font-size:12px; margin-bottom:16px;">
+              <strong>⚠️ AI 분석 서버 연결 실패:</strong> ${error.message}<br/>
+              (Vercel의 GEMINI_API_KEY 설정을 확인해주세요. 현재는 규칙 기반 엔진으로 대체되었습니다.)
+            </div>
+            ${fallback}
+          `);
           setStatus('done');
         }
       };
@@ -1186,20 +1212,20 @@
     // --- LOGIC: Rule-based Interpretation Engine ---
     const generateInterpretation = (p, s, u) => {
       // 1. Core Identity
-      let text = `당신은 < strong > ${p.name.split(' (')[0]}</strong > 의 성향을 중심으로 세상을 바라봅니다. `;
+      let text = `당신은 <strong>${p.name.split(' (')[0]}</strong>의 성향을 중심으로 세상을 바라봅니다. `;
 
       // 2. Combination Logic (Primary + Secondary)
       const isAnalytic = ['Engineer', 'Scientist', 'Economist', 'Detective', 'Cartographer'].includes(p.id);
       const isEmpathic = ['Anthropologist', 'Journalist'].includes(p.id);
 
       if (p.id === s.id) {
-        text += `특히 한 가지 사고방식이 압도적으로 발달해 있어, 해당 분야의 전문가적 통찰을 보여주지만 때로는 시야가 좁아질 수 있음을 주의해야 합니다.< br /> <br />`;
+        text += `특히 한 가지 사고방식이 압도적으로 발달해 있어, 해당 분야의 전문가적 통찰을 보여주지만 때로는 시야가 좁아질 수 있음을 주의해야 합니다.<br /><br />`;
       } else {
-        text += `동시에 < strong > ${s.name.split(' (')[0]}</strong > 의 기질을 보조 무기로 활용하여 균형을 잡고 있군요.< br /> <br />`;
+        text += `동시에 <strong>${s.name.split(' (')[0]}</strong>의 기질을 보조 무기로 활용하여 균형을 잡고 있군요.<br /><br />`;
       }
 
       // 3. Synergy Sentence
-      text += `< strong >💡 강점의 결합</strong > <br />`;
+      text += `<strong>💡 강점의 결합</strong> <br />`;
       text += `당신은 ${p.coreQuestion}라고 묻는 본능적인 감각을 가지고 있으며, 이를 해결하는 과정에서 ${s.coreQuestion.replace('“', '').replace('”', '')}라는 질문을 더해 문제를 입체적으로 파악합니다. `;
 
       if (isAnalytic && ['Anthropologist', 'Journalist'].includes(s.id)) {
@@ -1209,12 +1235,12 @@
       } else {
         text += `이 두 가지 질문의 조합은 문제의 본질을 뚫고 지나가는 강력한 송곳과 같습니다. `;
       }
-      text += `< br /> <br />`;
+      text += `<br /><br />`;
 
       // 4. Shadow/Blindspot Warning
-      text += `< strong >⚠️ 주의할 점(Shadow)</strong > <br />`;
+      text += `<strong>⚠️ 주의할 점(Shadow)</strong> <br />`;
       text += `반면, <strong>${u.name.split(' (')[0]}</strong> 성향이 가장 낮게 나타났습니다. `;
-      text += `이는 당신이 문제 해결 과정에서 "${u.coreQuestion.replace('“', '').replace('”', '')}"라는 질문을 놓치기 쉽다는 것을 의미합니다.< br /> `;
+      text += `이는 당신이 문제 해결 과정에서 "${u.coreQuestion.replace('“', '').replace('”', '')}"라는 질문을 놓치기 쉽다는 것을 의미합니다.<br /> `;
 
       const shadowRisks = {
         'Anthropologist': '사용자의 실제 행동을 관찰하지 않고 책상 위에서만 고민하다가, 아무도 원하지 않는 해결책을 만들 위험이 있습니다.',
@@ -1232,8 +1258,8 @@
       text += `${shadowRisks[u.id] || ''}<br/><br/>`;
 
       // 5. Final Advice
-      text += `< strong >🚀 Action Plan</strong > <br />`;
-      text += `다음 회의에서는 의식적으로 < strong > "${u.coreQuestion.replace('“', '').replace('”', '')}"</strong > 라는 질문을 먼저 던져보세요.당신의 강력한 주 무기에 이 질문이 더해질 때, 비로소 완전한 문제정의가 완성될 것입니다.`;
+      text += `<strong>🚀 Action Plan</strong> <br />`;
+      text += `다음 회의에서는 의식적으로 <strong>"${u.coreQuestion.replace('“', '').replace('”', '')}"</strong> 라는 질문을 먼저 던져보세요. 당신의 강력한 주 무기에 이 질문이 더해질 때, 비로소 완전한 문제정의가 완성될 것입니다.`;
 
       return text;
     };
