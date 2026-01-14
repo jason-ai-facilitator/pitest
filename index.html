@@ -1101,8 +1101,8 @@
       return (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
           style={{ background: '#f8f9fa', padding: '32px', borderRadius: '16px', border: '1px solid #e9ecef' }}
         >
           <div style={{ textAlign: 'center', marginBottom: '32px' }}>
