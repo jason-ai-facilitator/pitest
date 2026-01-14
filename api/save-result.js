@@ -16,7 +16,7 @@ export default async function handler(req, res) {
 
     // Initialize Supabase (Ensure these are set in Vercel Environment Variables)
     const supabaseUrl = process.env.SUPABASE_URL;
-    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
 
     if (!supabaseUrl || !supabaseServiceKey) {
         console.warn('Supabase credentials missing. Falling back to log-only mode.');
