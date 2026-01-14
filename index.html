@@ -395,16 +395,32 @@
     const TestPage = () => {
       const history = useHistory();
       const [index, setIndex] = useState(() => {
-        const saved = localStorage.getItem('archetype_progress');
-        if (saved) {
-          const parsed = JSON.parse(saved);
-          return parsed.index >= questions.length ? 0 : parsed.index;
+        try {
+          const saved = localStorage.getItem('archetype_progress');
+          if (saved) {
+            const parsed = JSON.parse(saved);
+            if (parsed && typeof parsed === 'object' && typeof parsed.index === 'number') {
+              return parsed.index >= questions.length ? 0 : parsed.index;
+            }
+          }
+        } catch (e) {
+          console.error("Failed to parse progress", e);
         }
         return 0;
       });
       const [answers, setAnswers] = useState(() => {
-        const saved = localStorage.getItem('archetype_progress');
-        return saved ? JSON.parse(saved).answers : {};
+        try {
+          const saved = localStorage.getItem('archetype_progress');
+          if (saved) {
+            const parsed = JSON.parse(saved);
+            if (parsed && typeof parsed === 'object' && parsed.answers) {
+              return parsed.answers;
+            }
+          }
+        } catch (e) {
+          console.error("Failed to parse answers", e);
+        }
+        return {};
       });
       const [isFinishing, setIsFinishing] = useState(false);
 
