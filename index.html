@@ -788,6 +788,7 @@
       const [results, setResults] = useState(null);
       const [stats, setStats] = useState(null);
       const [statsError, setStatsError] = useState(null);
+      const [statsStatus, setStatsStatus] = useState('idle'); // idle, loading, done
       const userName = localStorage.getItem('archetype_user_name') || '방문자';
 
       useEffect(() => {
@@ -795,21 +796,23 @@
         if (saved) {
           setResults(calculateResults(JSON.parse(saved)));
         }
-
-        fetch('/api/get-stats')
-          .then(res => {
-            if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
-            return res.json();
-          })
-          .then(data => {
-            if (data.error) throw new Error(data.error);
-            setStats(data);
-          })
-          .catch(err => {
-            console.error("Failed to fetch stats", err);
-            setStatsError(err.message);
-          });
       }, []);
+
+      const fetchStats = async () => {
+        setStatsStatus('loading');
+        try {
+          const res = await fetch('/api/get-stats');
+          if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+          const data = await res.json();
+          if (data.error) throw new Error(data.error);
+          setStats(data);
+          setStatsStatus('done');
+        } catch (err) {
+          console.error("Failed to fetch stats", err);
+          setStatsError(err.message);
+          setStatsStatus('done');
+        }
+      };
 
       if (!results) return (
         <div className="screen" style={{ justifyContent: 'center', alignItems: 'center' }}>
@@ -876,20 +879,36 @@
           </div>
 
 
-          {stats ? (
+          {statsStatus === 'idle' ? (
+            <div style={{ marginTop: '60px', background: '#F8F9FA', padding: '24px', borderRadius: '12px', textAlign: 'center', border: '1px dashed #ccc' }}>
+              <span style={{ fontSize: '20px', display: 'block', marginBottom: '8px' }}>📊</span>
+              <p style={{ fontSize: '14px', color: '#666', marginBottom: '16px' }}>궁금하신가요? 다른 참여자들의<br />평균 데이터와 비교해 보세요.</p>
+              <button
+                onClick={fetchStats}
+                className="btn-secondary"
+                style={{ padding: '8px 20px', fontSize: '13px' }}
+              >
+                전체 통계 데이터 확인하기
+              </button>
+            </div>
+          ) : statsStatus === 'loading' ? (
+            <div style={{ marginTop: '60px', textAlign: 'center', opacity: 0.5 }}>
+              <div className="small-spinner" style={{ margin: '0 auto 12px' }}></div>
+              <p className="text-small">데이터베이스에서 실시간 통계를 가져오는 중...</p>
+              <style>{`
+                .small-spinner { width: 16px; height: 16px; border: 2px solid #ddd; border-top-color: #666; border-radius: 50%; animation: spin 1s linear infinite; }
+              `}</style>
+            </div>
+          ) : stats ? (
             <div style={{ marginTop: '60px' }}>
               <StatisticsSection stats={stats} userPrimaryId={primary.id} />
             </div>
           ) : statsError ? (
             <div style={{ marginTop: '60px', padding: '20px', background: '#fff3f3', border: '1px solid #ffc1c1', borderRadius: '12px', color: '#d63031', fontSize: '13px' }}>
-              <strong>📊 통계 데이터를 불러올 수 없습니다:</strong> ${statsError}<br />
+              <strong>📊 통계 데이터를 불러올 수 없습니다:</strong> {statsError}<br />
               (Vercel의 SUPABASE 환경 변수 및 DB 테이블 설정을 확인해주세요.)
             </div>
-          ) : (
-            <div style={{ marginTop: '60px', textAlign: 'center', opacity: 0.5 }}>
-              <p className="text-small">통계 데이터를 불러오는 중...</p>
-            </div>
-          )}
+          ) : null}
 
           <div style={{ marginTop: '60px' }}>
             <h3 className="text-h2">전체 사고 분포</h3>
