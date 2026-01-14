@@ -1046,8 +1046,11 @@
     };
 
     const StatisticsSection = ({ stats, userPrimaryId }) => {
-      const userPrimaryName = archetypes.find(a => a.id === userPrimaryId)?.name.split(' (')[0];
-      const userPercent = stats.distribution[userPrimaryId] || 10;
+      if (!stats || !stats.distribution) return null; // Safety check
+
+      const archetype = archetypes.find(a => a.id === userPrimaryId);
+      const userPrimaryName = archetype ? archetype.name.split(' (')[0] : '관련';
+      const userPercent = stats.distribution[userPrimaryId] || 0;
 
       return (
         <motion.div
